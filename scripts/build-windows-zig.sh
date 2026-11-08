@@ -19,7 +19,7 @@ VERSION="$(sed -n 's/^project(LYNX VERSION \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' CM
 mkdir -p "$OUT/juce" "$OUT/app" "$OUT/shim"
 
 # MinGW headers are lowercase; JUCE includes some with capitals (on Windows it does not matter).
-echo '#include <dbghelp.h>' > "$OUT/shim/Dbghelp.h"
+echo '#include_next <dbghelp.h>' > "$OUT/shim/Dbghelp.h"
 
 MODULES=(juce_core juce_data_structures juce_events juce_graphics juce_gui_basics juce_gui_extra
          juce_audio_basics juce_audio_devices juce_audio_formats juce_audio_processors juce_audio_utils juce_dsp juce_opengl)

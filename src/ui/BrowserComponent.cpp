@@ -817,6 +817,40 @@ public:
             repaint();
     }
 
+    // a folder's cover picture (the image drumkits ship with), reduced once and kept: an invalid image = it has none
+    const juce::Image& coverOf (const juce::File& folder)
+    {
+        const auto key = folder.getFullPathName();
+        if (const auto found = coverCache.find (key); found != coverCache.end())
+            return found->second;
+
+        const auto score = [] (const juce::File& f)
+        {
+            const auto name = f.getFileNameWithoutExtension().toLowerCase();
+            return name.contains ("cover") || name.contains ("folder") || name.contains ("artwork") || name.contains ("front") ? 0 : 1;
+        };
+        juce::File best;
+        for (const auto& f : folder.findChildFiles (juce::File::findFiles, false, "*.png;*.jpg;*.jpeg"))
+            if (best == juce::File() || score (f) < score (best)
+                || (score (f) == score (best) && f.getFileName().compareNatural (best.getFileName()) < 0))
+                best = f;
+
+        juce::Image cover;
+        if (best != juce::File() && best.getSize() < 30 * 1024 * 1024)
+        {
+            const auto image = juce::ImageFileFormat::loadFrom (best);
+            if (image.isValid())
+            {
+                const auto side = juce::jmin (image.getWidth(), image.getHeight());
+                cover = image.getClippedImage ({ (image.getWidth() - side) / 2, (image.getHeight() - side) / 2, side, side })
+                             .rescaled (36, 36, juce::Graphics::highResamplingQuality);
+            }
+        }
+        return coverCache.emplace (key, cover).first->second;
+    }
+
+    std::map<juce::String, juce::Image> coverCache;
+
     void paint (juce::Graphics& g) override
     {
         using namespace theme::colour;
@@ -873,7 +907,17 @@ public:
             if (n.missing)
                 iconColour = meterClip;
             const auto icon = n.icon != Icon::none ? n.icon : iconFor (n.file, n.folder);
-            icons::draw (g, icon, juce::Rectangle<float> (x, (float) r.getY() + 3.0f, 16.0f, 16.0f), iconColour);
+            const juce::Image* cover = nullptr; // a folder's cover picture (what drumkits ship with) replaces its icon
+            if (n.kind == Kind::fsFolder && n.folder && n.depth > 0 && n.file != juce::File())
+                if (const auto& c = coverOf (n.file); c.isValid())
+                    cover = &c;
+            if (cover != nullptr)
+            {
+                g.setOpacity (1.0f);
+                g.drawImage (*cover, juce::Rectangle<float> (x, (float) r.getY() + 2.0f, 18.0f, 18.0f), juce::RectanglePlacement::centred);
+            }
+            else
+                icons::draw (g, icon, juce::Rectangle<float> (x, (float) r.getY() + 3.0f, 16.0f, 16.0f), iconColour);
             x += 21.0f;
 
             auto text = r.withLeft ((int) x).withTrimmedRight (6);

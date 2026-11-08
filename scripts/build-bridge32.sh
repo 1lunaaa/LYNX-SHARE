@@ -16,7 +16,7 @@ JOBS="${JOBS:-$(nproc)}"
 TARGET=x86-windows-gnu
 B="$OUT/x86"
 mkdir -p "$B/juce" "$B/app" "$OUT/shim"
-echo '#include <dbghelp.h>' > "$OUT/shim/Dbghelp.h"
+echo '#include_next <dbghelp.h>' > "$OUT/shim/Dbghelp.h"
 
 VERSION="$(sed -n 's/^project(LYNX VERSION \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' CMakeLists.txt)"
 MODULES=(juce_core juce_data_structures juce_events juce_graphics juce_gui_basics juce_gui_extra juce_audio_basics juce_audio_processors)
