@@ -1076,13 +1076,14 @@ public:
         // the files the Browser lists (samples, MIDI, projects, presets): an other file would not show in the folder
         return ! flat && std::any_of (files.begin(), files.end(), [] (const juce::String& f) {
             const juce::File file (f);
-            return file.existsAsFile() && isListed (file);
+            return (file.existsAsFile() && isListed (file)) || file.isDirectory();
         });
     }
 
-    void fileDragMove (const juce::StringArray&, int, int y) override
+    void fileDragMove (const juce::StringArray& files, int, int y) override
     {
-        if (const auto row = dropFolderRow (y); row != dropRow)
+        const auto folderDrop = std::any_of (files.begin(), files.end(), [] (const juce::String& f) { return juce::File (f).isDirectory(); });
+        if (const auto row = folderDrop ? -1 : dropFolderRow (y); row != dropRow)
         {
             dropRow = row;
             repaint();
@@ -1099,6 +1100,31 @@ public:
     {
         dropRow = -1;
         repaint();
+        // folders (a drumkit, a sample pack): added to the Browser like "Add a folder to the Browser" (FL: drag it into the Browser)
+        {
+            juce::StringArray folders;
+            for (const auto& path : files)
+                if (juce::File (path).isDirectory())
+                    folders.add (path);
+            if (! folders.isEmpty())
+            {
+                // (the tree is built again: nothing of this tree is touched after this call)
+                juce::MessageManager::callAsync ([safe = juce::Component::SafePointer<BrowserComponent> (&browser), folders] {
+                    if (safe == nullptr)
+                        return;
+                    auto lines = juce::StringArray::fromLines (safe->userFoldersFile().loadFileAsString());
+                    lines.removeEmptyStrings();
+                    for (const auto& added : folders)
+                        lines.addIfNotAlreadyThere (added);
+                    safe->userFoldersFile().replaceWithText (lines.joinIntoString ("\n"));
+                    safe->setTab (BrowserComponent::allTab);
+                    safe->rebuildRoots();
+                    safe->showNote (folders.size() == 1 ? tr ("Added the folder {0}", { juce::File (folders[0]).getFileName() })
+                                                        : tr ("Added {0} folders", { juce::String (folders.size()) }));
+                });
+                return;
+            }
+        }
         const auto row = dropFolderRow (y);
         if (row < 0)
         {
