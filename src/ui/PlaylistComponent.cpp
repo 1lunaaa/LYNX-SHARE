@@ -4297,20 +4297,6 @@ juce::PopupMenu PlaylistComponent::buildTrackMenu (int track)
     });
     menu.addSeparator();
     {
-        const auto header = noteedit::groupHeaderOf (song, track);
-        const auto member = info.grouped && track > 0;
-        const auto folded = header >= 0 && header < (int) song.playlistTracks.size() && song.playlistTracks[(std::size_t) header].collapsed;
-        menu.addItem (theme::mnemonic (tr ("Group with above track"), 'G'), track > 0 && ! member, member, [this, track] {
-            engine.editSong ([track] (Song& s) { noteedit::groupWithAbove (s, track); });
-        });
-        menu.addItem (theme::mnemonic (tr ("Ungroup"), 'n'), member, false, [this, track] { engine.editSong ([track] (Song& s) { noteedit::ungroupTrack (s, track); }); });
-        menu.addItem (tr ("Auto color group"), header >= 0, false, [this, track] { engine.editSong ([track] (Song& s) { noteedit::colourGroup (s, track); }); });
-        menu.addItem (tr ("Collapse grouped tracks"), header >= 0, folded, [this, track, folded] {
-            engine.editSong ([track, folded] (Song& s) { noteedit::setGroupCollapsed (s, track, ! folded); });
-        });
-    }
-    menu.addSeparator();
-    {
         // the sources of the track's clips: choosing one makes it what the pencil paints (FL's "Current clip source")
         juce::PopupMenu sources;
         std::vector<std::pair<ClipKind, int>> seen;
