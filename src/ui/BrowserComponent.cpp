@@ -744,6 +744,7 @@ public:
     void rebuild()
     {
         rows.clear();
+        topsDirty = true;
 
         if (flat)
             for (auto& n : flatNodes)
@@ -761,7 +762,7 @@ public:
         {
             const auto width = parent->getWidth();
             const auto viewHeight = parent->getParentComponent() != nullptr ? parent->getParentComponent()->getHeight() : parent->getHeight();
-            setSize (width, juce::jmax (viewHeight, (int) rows.size() * rowHeight));
+            setSize (width, juce::jmax (viewHeight, totalHeight()));
         }
     }
 
@@ -817,11 +818,14 @@ public:
             repaint();
     }
 
-    // a folder's cover picture (the image drumkits ship with), reduced once and kept: an invalid image = it has none
-    const juce::Image& coverOf (const juce::File& folder)
+    // Rows have different heights: a folder with a cover picture (what drumkits ship with) is taller than the others.
+    static constexpr int coverRowHeight = 56, coverSize = 48;
+
+    // the cover picture of a folder (its best .png / .jpg / .jpeg), found once; a null File = it has none
+    juce::File coverFileOf (const juce::File& folder) const
     {
         const auto key = folder.getFullPathName();
-        if (const auto found = coverCache.find (key); found != coverCache.end())
+        if (const auto found = coverFiles.find (key); found != coverFiles.end())
             return found->second;
 
         const auto score = [] (const juce::File& f)
@@ -834,7 +838,71 @@ public:
             if (best == juce::File() || score (f) < score (best)
                 || (score (f) == score (best) && f.getFileName().compareNatural (best.getFileName()) < 0))
                 best = f;
+        coverFiles.emplace (key, best);
+        return best;
+    }
 
+    bool hasCover (const Node& n) const
+    {
+        return ! flat && n.kind == Kind::fsFolder && n.folder && n.depth > 0 && n.file != juce::File()
+               && coverFileOf (n.file) != juce::File();
+    }
+
+    int heightOf (const Node& n) const { return hasCover (n) ? coverRowHeight : rowHeight; }
+
+    // rowTops[i] = the y of row i, rowTops[rows.size()] = the total height; worked out again when the rows change
+    void ensureTops() const
+    {
+        if (! topsDirty && rowTops.size() == rows.size() + 1)
+            return;
+        rowTops.assign (rows.size() + 1, 0);
+        int y = 0;
+        for (std::size_t i = 0; i < rows.size(); ++i)
+        {
+            rowTops[i] = y;
+            y += heightOf (*rows[i]);
+        }
+        rowTops[rows.size()] = y;
+        topsDirty = false;
+    }
+
+    int totalHeight() const
+    {
+        ensureTops();
+        return rowTops.back();
+    }
+
+    int rowTop (int row) const
+    {
+        ensureTops();
+        if (row <= 0)
+            return 0;
+        if (row >= (int) rows.size())
+            return rowTops.back() + (row - (int) rows.size()) * rowHeight;
+        return rowTops[(std::size_t) row];
+    }
+
+    int rowBottom (int row) const
+    {
+        return rowTop (row) + (row >= 0 && row < (int) rows.size() ? heightOf (*rows[(std::size_t) row]) : rowHeight);
+    }
+
+    // the row whose band contains y (-1 above the first; the last row for any y below the end)
+    int rowIndexAt (int y) const
+    {
+        ensureTops();
+        const auto end = rowTops.begin() + (std::ptrdiff_t) rows.size();
+        return (int) (std::upper_bound (rowTops.begin(), end, y) - rowTops.begin()) - 1;
+    }
+
+    // the cover picture, cut square and reduced once (kept): an invalid image = it could not be read
+    const juce::Image& coverOf (const juce::File& folder)
+    {
+        const auto key = folder.getFullPathName();
+        if (const auto found = coverCache.find (key); found != coverCache.end())
+            return found->second;
+
+        const auto best = coverFileOf (folder);
         juce::Image cover;
         if (best != juce::File() && best.getSize() < 30 * 1024 * 1024)
         {
@@ -843,12 +911,15 @@ public:
             {
                 const auto side = juce::jmin (image.getWidth(), image.getHeight());
                 cover = image.getClippedImage ({ (image.getWidth() - side) / 2, (image.getHeight() - side) / 2, side, side })
-                             .rescaled (36, 36, juce::Graphics::highResamplingQuality);
+                             .rescaled (96, 96, juce::Graphics::highResamplingQuality);
             }
         }
         return coverCache.emplace (key, cover).first->second;
     }
 
+    mutable std::map<juce::String, juce::File> coverFiles;
+    mutable std::vector<int> rowTops;
+    mutable bool topsDirty = true;
     std::map<juce::String, juce::Image> coverCache;
 
     void paint (juce::Graphics& g) override
@@ -856,13 +927,13 @@ public:
         using namespace theme::colour;
         g.fillAll (bg2);
         const auto clip = g.getClipBounds();
-        const auto first = juce::jmax (0, clip.getY() / rowHeight), last = juce::jmin ((int) rows.size() - 1, clip.getBottom() / rowHeight);
+        const auto first = juce::jmax (0, rowIndexAt (clip.getY())), last = juce::jmin ((int) rows.size() - 1, rowIndexAt (clip.getBottom()));
         const auto previewing = browser.isPreviewPlaying() ? browser.previewedFile : juce::File();
 
         for (int i = first; i <= last; ++i)
         {
             const auto& n = *rows[(std::size_t) i];
-            auto r = juce::Rectangle<int> (0, i * rowHeight, getWidth(), rowHeight);
+            auto r = juce::Rectangle<int> (0, rowTop (i), getWidth(), heightOf (n));
 
             // an open project section sits on a slightly raised band (FL draws its open folders on a band)
             if ((n.kind == Kind::project || n.kind == Kind::category) && n.expanded)
@@ -908,13 +979,14 @@ public:
                 iconColour = meterClip;
             const auto icon = n.icon != Icon::none ? n.icon : iconFor (n.file, n.folder);
             const juce::Image* cover = nullptr; // a folder's cover picture (what drumkits ship with) replaces its icon
-            if (n.kind == Kind::fsFolder && n.folder && n.depth > 0 && n.file != juce::File())
+            if (hasCover (n))
                 if (const auto& c = coverOf (n.file); c.isValid())
                     cover = &c;
             if (cover != nullptr)
             {
                 g.setOpacity (1.0f);
-                g.drawImage (*cover, juce::Rectangle<float> (x, (float) r.getY() + 2.0f, 18.0f, 18.0f), juce::RectanglePlacement::centred);
+                g.drawImage (*cover, juce::Rectangle<float> (x, (float) r.getY() + 4.0f, (float) coverSize, (float) coverSize), juce::RectanglePlacement::centred);
+                x += 33.0f; // (the 21 below make it 54: the picture and a gap)
             }
             else
                 icons::draw (g, icon, juce::Rectangle<float> (x, (float) r.getY() + 3.0f, 16.0f, 16.0f), iconColour);
@@ -966,7 +1038,7 @@ public:
         if (juce::isPositiveAndBelow (dropRow, (int) rows.size())) // files from the system would go here
         {
             g.setColour (accent);
-            g.drawRect (juce::Rectangle<int> (0, dropRow * rowHeight, getWidth(), rowHeight), 2);
+            g.drawRect (juce::Rectangle<int> (0, rowTop (dropRow), getWidth(), rowBottom (dropRow) - rowTop (dropRow)), 2);
         }
 
         if (rows.empty() && status.isNotEmpty())
@@ -979,8 +1051,8 @@ public:
 
     int rowAt (int y) const
     {
-        const auto row = y / rowHeight;
-        return y >= 0 && row < (int) rows.size() ? row : -1;
+        const auto row = rowIndexAt (y);
+        return y >= 0 && row >= 0 && y < totalHeight() ? row : -1;
     }
 
     // --- files dragged in from the system (issue #12): copied into the folder under the mouse ----------------------
@@ -2010,7 +2082,7 @@ private:
             return;
         if (auto* view = findParentComponentOfClass<juce::Viewport>())
         {
-            const auto top = row * rowHeight, bottom = top + rowHeight;
+            const auto top = rowTop (row), bottom = rowBottom (row);
             const auto y = view->getViewPositionY(), h = view->getViewHeight();
             if (top < y)
                 view->setViewPosition (0, top);
@@ -2022,7 +2094,7 @@ private:
     void repaintRow (int row)
     {
         if (row >= 0)
-            repaint (0, row * rowHeight, getWidth(), rowHeight);
+            repaint (0, rowTop (row), getWidth(), rowBottom (row) - rowTop (row));
     }
 
     juce::Image dragImage (const Node& n) const
