@@ -4964,8 +4964,11 @@ juce::PopupMenu PlaylistComponent::buildClipMenu (int index, int mouseX)
             if (onOpenPattern)
                 onOpenPattern();
         });
-        menu.addItem (tr ("Open in Piano Roll"), [this, p = clip.pattern] {
+        menu.addItem (tr ("Open in Piano Roll"), [this, p = clip.pattern, t = clip.track] {
             engine.editSong ([p] (Song& s) { if (p < (int) s.patterns.size()) s.currentPattern = p; }, false);
+            if (t >= 0 && t < (int) engine.getSong().playlistTracks.size()
+                && engine.getSong().playlistTracks[(std::size_t) t].mode == PlaylistTrackMode::instrument)
+                engine.setSelectedChannel (engine.getSong().playlistTracks[(std::size_t) t].channel);
             if (onOpenPianoRoll)
                 onOpenPianoRoll();
         });
@@ -6298,6 +6301,14 @@ void PlaylistComponent::openClipSource (int hit, bool other)
                              && hasPianoRollNotes (engine.getSong().patterns[(std::size_t) clip.pattern]));
         if (other)
             pianoRoll = ! pianoRoll;
+        // a clip on an instrument track is that channel's (FL): its Piano Roll opens right away, whatever "edit patterns in" says
+        if (const auto trackIndex = clip.track; trackIndex >= 0 && trackIndex < (int) engine.getSong().playlistTracks.size()
+            && engine.getSong().playlistTracks[(std::size_t) trackIndex].mode == PlaylistTrackMode::instrument
+            && engine.getSong().playlistTracks[(std::size_t) trackIndex].channel >= 0)
+        {
+            pianoRoll = ! other;
+            engine.setSelectedChannel (engine.getSong().playlistTracks[(std::size_t) trackIndex].channel);
+        }
 
         if (pianoRoll && onOpenPianoRoll)
             onOpenPianoRoll();
