@@ -127,7 +127,8 @@ struct Layout
     {
         Layout l;
         for (auto g : defaultOrder())
-            l.entries.push_back ({ g, true });
+            l.entries.push_back ({ g, g == Group::transport || g == Group::record || g == Group::windows || g == Group::output });
+        l.uiScale = 125;
         return l;
     }
 
@@ -329,6 +330,8 @@ inline Layout applyPreset (Layout from, Preset p)
 {
     const auto d = Layout::makeDefault();
     from.entries = d.entries;
+    for (auto& e : from.entries)
+        e.shown = true; // every group: the new-install default hides some
     auto show = [&from] (std::initializer_list<Group> groups) {
         for (auto& e : from.entries)
             e.shown = std::find (groups.begin(), groups.end(), e.group) != groups.end();
