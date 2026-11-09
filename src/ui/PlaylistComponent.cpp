@@ -8,6 +8,7 @@
 #include "ui/ImageReadback.h"
 #include "ui/TextCache.h"
 #include "ui/PlaylistComponent.h"
+#include "ui/QuickPick.h"
 
 #include "core/EventEdit.h"
 #include "ui/EventEditor.h"
@@ -4178,7 +4179,50 @@ juce::PopupMenu PlaylistComponent::buildTrackMenu (int track)
                                                                                  tr ("There are no available mixer tracks."));
                                  });
         }
-        modes.addSubMenu (theme::mnemonic (tr ("Instrument track"), 'I'), instruments, instruments.getNumItems() > 0, nullptr, info.mode == PlaylistTrackMode::instrument);
+        // "New instrument" (like FL's Instrument track list): the generator list of the Channel Rack's "+" menu. The one chosen
+        // becomes a new channel, this track becomes its instrument track, and an empty clip of the channel's pattern is placed
+        // on it after the last clip of the track: nothing to do in the Channel Rack
+        {
+            juce::PopupMenu fresh;
+            quickpick::addGeneratorMenu (fresh, engine, [this, track] (ChannelDef picked) {
+                int channel = -1;
+                bool ok = false;
+                engine.editSong ([track, &picked, &channel, &ok] (Song& s) {
+                    picked.mixerTrack = s.claimFreeInsert();
+                    s.channels.push_back (picked);
+                    channel = (int) s.channels.size() - 1;
+                    ok = trackmodes::makeInstrumentTrack (s, track, channel);
+                    if (! ok)
+                    {
+                        s.channels.pop_back();
+                        return;
+                    }
+                    const auto patternIndex = trackmodes::instrumentTrackPattern (s, track);
+                    if (patternIndex < 0)
+                        return;
+                    s.currentPattern = patternIndex;
+                    Clip clip;
+                    clip.pattern = patternIndex;
+                    clip.track = track;
+                    for (const auto& other : s.playlist)
+                        if (other.track == track)
+                            clip.start = std::max<std::int64_t> (clip.start, other.end());
+                    clip.length = s.patterns[(std::size_t) patternIndex].effectiveLength (s.beatsPerBar);
+                    s.playlist.push_back (clip);
+                });
+                if (! ok)
+                {
+                    juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon, tr ("Can't create new instrument track"),
+                                                            tr ("There are no available mixer tracks."));
+                    return;
+                }
+                engine.setSelectedChannel (channel); // its piano roll is the channel's
+            }, nullptr, nullptr, this);
+            if (instruments.getNumItems() > 0)
+                instruments.addSeparator();
+            instruments.addSubMenu (theme::mnemonic (tr ("New instrument"), 'N'), fresh);
+        }
+        modes.addSubMenu (theme::mnemonic (tr ("Instrument track"), 'I'), instruments, true, nullptr, info.mode == PlaylistTrackMode::instrument);
         menu.addSubMenu (theme::mnemonic (tr ("Track mode"), 'T'), modes);
     }
     {
