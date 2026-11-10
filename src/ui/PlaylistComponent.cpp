@@ -4158,25 +4158,49 @@ juce::PopupMenu PlaylistComponent::buildTrackMenu (int track)
         juce::PopupMenu modes, instruments;
         modes.addItem (theme::mnemonic (tr ("Unassigned"), 'U'), true, info.mode == PlaylistTrackMode::unassigned,
                        [this, track] { engine.editSong ([track] (Song& s) { trackmodes::unassign (s, track); }); });
-        modes.addItem (theme::mnemonic (tr ("Audio track"), 'A'), true, info.mode == PlaylistTrackMode::audio, [this, track, wasAudio = info.mode == PlaylistTrackMode::audio] {
-            bool ok = false;
+        // "Audio track": the next free mixer track, or the one picked from the list (FL: the mixer track the Playlist track plays through)
+        const auto assignAudio = [this, track, wasAudio = info.mode == PlaylistTrackMode::audio, previousMixer = info.mixerTrack] (int wantedMixer) {
+            bool ok = false, setDefaults = false;
             int mixerTrack = -1;
-            engine.editSong ([track, wasAudio, &ok, &mixerTrack] (Song& s) {
-                ok = trackmodes::makeAudioTrack (s, track);
-                // a new audio track starts as for recording: External input only, monitoring off (its input is set below)
-                if (ok && ! wasAudio && track < (int) s.playlistTracks.size() && s.playlistTracks[(std::size_t) track].mixerTrack > 0)
+            engine.editSong ([track, wasAudio, previousMixer, wantedMixer, &ok, &setDefaults, &mixerTrack] (Song& s) {
+                ok = trackmodes::makeAudioTrack (s, track, wantedMixer);
+                if (! ok || track >= (int) s.playlistTracks.size())
+                    return;
+                mixerTrack = s.playlistTracks[(std::size_t) track].mixerTrack;
+                // a new audio track (or one moved to another mixer track) that has no input yet starts as for recording:
+                // External input only, monitoring off (its input is set below)
+                auto& mixerStrip = s.mixer[(std::size_t) mixerTrack];
+                if ((! wasAudio || mixerTrack != previousMixer) && mixerStrip.inputChannel < 0 && mixerStrip.flInput < 0)
                 {
-                    mixerTrack = s.playlistTracks[(std::size_t) track].mixerTrack;
-                    s.mixer[(std::size_t) mixerTrack].recordSource = RecordSource::externalInput;
-                    s.mixer[(std::size_t) mixerTrack].monitor = InputMonitor::off;
+                    mixerStrip.recordSource = RecordSource::externalInput;
+                    mixerStrip.monitor = InputMonitor::off;
+                    setDefaults = true;
                 }
             });
-            if (ok && mixerTrack > 0)
-                engine.setInsertInput (mixerTrack, 0, false); // Input channel 1 (mono); this also opens the device input
             if (! ok)
                 juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon, tr ("Can't create new audio track"),
-                                                        tr ("There are no available mixer tracks."));
-        });
+                                                        wantedMixer > 0 ? tr ("That mixer track is already used by another Playlist track.")
+                                                                        : tr ("There are no available mixer tracks."));
+            else if (setDefaults)
+                engine.setInsertInput (mixerTrack, 0, false); // Input channel 1 (mono); this also opens the device input
+        };
+        juce::PopupMenu audioMenu;
+        audioMenu.addItem (tr ("Next free mixer track"), true, false, [assignAudio] { assignAudio (-1); });
+        audioMenu.addSeparator();
+        for (int insert = 1; insert < (int) song.mixer.size(); ++insert)
+        {
+            bool usedElsewhere = false;
+            for (int other = 0; other < (int) song.playlistTracks.size(); ++other)
+                if (other != track && song.playlistTracks[(std::size_t) other].mode != PlaylistTrackMode::unassigned
+                    && song.playlistTracks[(std::size_t) other].mixerTrack == insert)
+                    usedElsewhere = true;
+            auto label = tr ("Mixer track {0}", { juce::String (insert) });
+            if (! song.mixer[(std::size_t) insert].name.empty())
+                label += "  " + juce::String::fromUTF8 (song.mixer[(std::size_t) insert].name.c_str());
+            audioMenu.addItem (label, ! usedElsewhere, info.mode == PlaylistTrackMode::audio && info.mixerTrack == insert,
+                               [assignAudio, insert] { assignAudio (insert); });
+        }
+        modes.addSubMenu (theme::mnemonic (tr ("Audio track"), 'A'), audioMenu, true, nullptr, info.mode == PlaylistTrackMode::audio);
         for (int c = 0; c < (int) song.channels.size(); ++c)
         {
             const auto kind = song.channels[(std::size_t) c].instrument;
@@ -6586,7 +6610,7 @@ void PlaylistComponent::mouseWheelMove (const juce::MouseEvent& e, const juce::M
         return;
     }
 
-    if (ctrl)
+    if (ctrl || (! shift && ! alt && e.x >= headerWidth && e.y < tracksTop() && wheel.deltaY != 0.0f)) // (the ruler on top: the wheel zooms, as in FL)
     {
         gliding = false;
         const auto anchorPixels = (double) juce::jmax (0, e.x - headerWidth);

@@ -432,12 +432,16 @@ int freeMixerTrack (Song& song)
     return (int) song.mixer.size() - 1;
 }
 
-bool makeAudioTrack (Song& song, int track)
+bool makeAudioTrack (Song& song, int track, int wantedMixer)
 {
     if (track < 0 || track >= 500)
         return false;
+    if (wantedMixer > 0 && (wantedMixer >= (int) song.mixer.size() || linkedElsewhere (song, wantedMixer, track)))
+        return false; // (not a mixer track of this project, or another Playlist track already uses it)
     auto mixer = track < (int) song.playlistTracks.size() && song.playlistTracks[(std::size_t) track].mode == PlaylistTrackMode::audio
                      ? song.playlistTracks[(std::size_t) track].mixerTrack : -1;
+    if (wantedMixer > 0)
+        mixer = wantedMixer;
     if (mixer <= 0)
         mixer = freeMixerTrack (song);
     if (mixer <= 0)
@@ -447,7 +451,8 @@ bool makeAudioTrack (Song& song, int track)
     t->mixerTrack = mixer;
     t->channel = -1;
     auto& m = song.mixer[(std::size_t) mixer];
-    m.name = trackName (song, track);
+    if (wantedMixer <= 0 || m.name.empty()) // (a mixer track picked by hand keeps its own name)
+        m.name = trackName (song, track);
     if (t->colour != 0)
         m.colour = t->colour;
     // the audio clips already on the track play through it from now on

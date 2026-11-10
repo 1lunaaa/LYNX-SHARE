@@ -115,7 +115,7 @@ namespace lynx::trackmodes
 int freeMixerTrack (Song& song);
 // "Track mode › Audio track": links the track to a free mixer track (named and coloured after the track). False when
 // no mixer track is free.
-bool makeAudioTrack (Song& song, int track);
+bool makeAudioTrack (Song& song, int track, int wantedMixer = -1); // wantedMixer > 0: that mixer track (none if another Playlist track uses it) instead of a free one
 // "Track mode › Instrument track": the track belongs to `channel` (an instrument, not an audio clip or automation
 // channel) and to its mixer track (a free one when the channel plays on the Master or on a track already linked).
 bool makeInstrumentTrack (Song& song, int track, int channel);
