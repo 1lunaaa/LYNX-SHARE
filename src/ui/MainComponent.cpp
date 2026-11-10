@@ -497,6 +497,10 @@ MainComponent::MainComponent (AudioEngine& e, bool restoreUserSettings)
     workspace.onDefaultLayout = [this] { fitChannelRack (true); };
     workspace.setPersistent (persistent);
     playlist.onOpenPattern = [this] { showPanel (Panel::channelRack); };
+    playlist.onOpenMixerTrack = [this] (int insert) { // double-click on an empty audio track
+        showPanel (Panel::mixer);
+        mixer.selectTrack (insert);
+    };
     playlist.onOpenPianoRoll = [this] {
         // edit a channel that plays in this pattern
         const auto& song = engine.getSong();

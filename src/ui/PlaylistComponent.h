@@ -71,6 +71,7 @@ public:
     std::function<void()> onOpenPianoRoll;
     std::function<void (int pattern)> onRenamePattern;  // clip menu: Rename and color (pattern clips)
     std::function<void (int channel)> onOpenInSampler;  // clip menu: the audio clip's file in a new Sampler channel
+    std::function<void (int insert)> onOpenMixerTrack; // double-click on an empty audio track: its mixer track
 
     // Double-click on a pattern clip opens it in: 0 = the Piano Roll when it has piano-roll notes, else the
     // Channel Rack; 1 = always the Channel Rack; 2 = always the Piano Roll. Alt+double-click opens the other one.

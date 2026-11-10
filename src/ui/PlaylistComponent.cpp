@@ -6297,6 +6297,10 @@ void PlaylistComponent::mouseDoubleClick (const juce::MouseEvent& e)
 
         if (first >= 0)
             openClipSource (first, e.mods.isAltDown());
+        else if (const auto& plTracks = engine.getSong().playlistTracks;
+                 track >= 0 && track < (int) plTracks.size() && plTracks[(std::size_t) track].mode == PlaylistTrackMode::audio
+                 && plTracks[(std::size_t) track].mixerTrack > 0 && onOpenMixerTrack)
+            onOpenMixerTrack (plTracks[(std::size_t) track].mixerTrack); // an empty audio track: its mixer track, not "Rename and color"
         else
             renameTrack (track);
         return;
