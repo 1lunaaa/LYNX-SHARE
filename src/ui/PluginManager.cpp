@@ -404,11 +404,47 @@ private:
             host.forgetFile (file);
             reload();
         });
+        menu.addItem (tr ("Delete the plugin file..."), persistent && juce::File::isAbsolutePath (file) && juce::File (file).exists(), false,
+                      [this, file] { confirmDeleteFile (file); });
         menu.addSeparator();
         menu.addItem (tr ("Show in folder"), juce::File::isAbsolutePath (file) && juce::File (file).exists(), false,
                       [file] { juce::File (file).revealToUser(); });
         menu.addItem (tr ("Copy path"), [file] { juce::SystemClipboard::copyTextToClipboard (file); });
         menu.showMenuAsync (juce::PopupMenu::Options().withMousePosition());
+    }
+
+    // "Delete the plugin file...": after asking, the plugin's file (a .vst3 / .clap / .dll / .vst, folder or file) goes to the
+    // Recycle Bin, never straight off the disk, and LYNX forgets it. Only plugin files are accepted.
+    void confirmDeleteFile (const juce::String& path)
+    {
+        const juce::File target (path);
+        if (! juce::File::isAbsolutePath (path) || ! target.exists())
+            return;
+        const auto extension = target.getFileExtension().toLowerCase();
+        if (extension != ".vst3" && extension != ".clap" && extension != ".dll" && extension != ".vst")
+        {
+            juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon, tr ("Delete the plugin file"),
+                                                    tr ("LYNX SHARE only deletes plugin files (.vst3, .clap, .dll, .vst)."));
+            return;
+        }
+        juce::AlertWindow::showOkCancelBox (juce::MessageBoxIconType::WarningIcon, tr ("Delete the plugin file"),
+                                            tr ("This moves the file to the Recycle Bin:") + "\n\n" + path + "\n\n"
+                                                + tr ("Every program that uses this plugin loses it, and its presets and other files stay where they are. "
+                                                      "To uninstall it properly, use the plugin's own uninstaller."),
+                                            tr ("Move to the Recycle Bin"), tr ("Cancel"), this,
+                                            juce::ModalCallbackFunction::create ([safe = juce::Component::SafePointer<PluginManagerPanel> (this), path] (int result) {
+                                                if (safe == nullptr || result != 1)
+                                                    return;
+                                                if (juce::File (path).moveToTrash())
+                                                {
+                                                    safe->host.forgetFile (path);
+                                                    safe->reload();
+                                                }
+                                                else
+                                                    juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon, tr ("Delete the plugin file"),
+                                                                                            tr ("Windows did not allow it (the folder may need administrator rights, or the plugin is in use):")
+                                                                                                + "\n\n" + path);
+                                            }));
     }
 
     void startScan (bool all)
