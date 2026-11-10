@@ -6542,12 +6542,7 @@ void showMenu (AudioEngine& engine, int track, juce::Component* target, std::fun
     if (track > 0) // FL's "Record" positions (round 168x, issue #41; FL's AudioRecorderRoutingMenu, in its order)
     {
         menu.addSectionHeader (tr ("Record"));
-        const std::pair<RecordSource, const char*> points[] = { { RecordSource::externalInput, TR_NOOP ("External input only") },
-                                                               { RecordSource::externalAndMixer, TR_NOOP ("External and mixer input") },
-                                                               { RecordSource::postEffects, TR_NOOP ("Post effects") },
-                                                               { RecordSource::postEq, TR_NOOP ("Post EQ") },
-                                                               { RecordSource::postLevel, TR_NOOP ("Post level and panning") },
-                                                               { RecordSource::postTrack, TR_NOOP ("Post track") } };
+        const std::pair<RecordSource, const char*> points[] = { { RecordSource::externalInput, TR_NOOP ("External input only") } };
         for (const auto& [point, label] : points)
             menu.addItem (tr (label), true, mt.recordSource == point, [&engine, track, point = point] { engine.setInsertRecordSource (track, point); });
         // LYNX extra: the dry device input as a second take beside a processed one (DI + amp, for re-amping)
@@ -6558,8 +6553,6 @@ void showMenu (AudioEngine& engine, int track, juce::Component* target, std::fun
 
     menu.addSectionHeader (tr ("Monitor external input"));
     const std::pair<InputMonitor, const char*> modes[] = { { InputMonitor::off, TR_NOOP ("Off") },
-                                                          { InputMonitor::whenArmed, TR_NOOP ("When armed") },
-                                                          { InputMonitor::automatic, TR_NOOP ("Auto (when armed, not while playing back)") },
                                                           { InputMonitor::on, TR_NOOP ("On") } };
     for (const auto& [mode, label] : modes)
     {

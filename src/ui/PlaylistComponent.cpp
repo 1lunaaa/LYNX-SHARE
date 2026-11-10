@@ -4158,9 +4158,21 @@ juce::PopupMenu PlaylistComponent::buildTrackMenu (int track)
         juce::PopupMenu modes, instruments;
         modes.addItem (theme::mnemonic (tr ("Unassigned"), 'U'), true, info.mode == PlaylistTrackMode::unassigned,
                        [this, track] { engine.editSong ([track] (Song& s) { trackmodes::unassign (s, track); }); });
-        modes.addItem (theme::mnemonic (tr ("Audio track"), 'A'), true, info.mode == PlaylistTrackMode::audio, [this, track] {
+        modes.addItem (theme::mnemonic (tr ("Audio track"), 'A'), true, info.mode == PlaylistTrackMode::audio, [this, track, wasAudio = info.mode == PlaylistTrackMode::audio] {
             bool ok = false;
-            engine.editSong ([track, &ok] (Song& s) { ok = trackmodes::makeAudioTrack (s, track); });
+            int mixerTrack = -1;
+            engine.editSong ([track, wasAudio, &ok, &mixerTrack] (Song& s) {
+                ok = trackmodes::makeAudioTrack (s, track);
+                // a new audio track starts as for recording: External input only, monitoring off (its input is set below)
+                if (ok && ! wasAudio && track < (int) s.playlistTracks.size() && s.playlistTracks[(std::size_t) track].mixerTrack > 0)
+                {
+                    mixerTrack = s.playlistTracks[(std::size_t) track].mixerTrack;
+                    s.mixer[(std::size_t) mixerTrack].recordSource = RecordSource::externalInput;
+                    s.mixer[(std::size_t) mixerTrack].monitor = InputMonitor::off;
+                }
+            });
+            if (ok && mixerTrack > 0)
+                engine.setInsertInput (mixerTrack, 0, false); // Input channel 1 (mono); this also opens the device input
             if (! ok)
                 juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon, tr ("Can't create new audio track"),
                                                         tr ("There are no available mixer tracks."));
