@@ -106,7 +106,7 @@ public:
             s.setRange (lo, hi, step);
             s.setTextValueSuffix (suffix);
             s.onDragEnd = [this] { apply(); };
-            s.onValueChange = [this, &s] { if (! s.isMouseButtonDown()) apply(); };
+            s.onValueChange = [this] { apply(); };
             addAndMakeVisible (s);
         };
 
