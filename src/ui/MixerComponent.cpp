@@ -6149,7 +6149,7 @@ void EffectsPanel::showAddMenu (int row)
     // LYNX equivalents of well-known third-party effects, with the same default preset a substitute gets
     juce::PopupMenu equivalents;
     for (const auto& entry : pluginSubstitutes())
-        if (! entry.instrument)
+        if (! entry.instrument && entry.effect != EffectKind::lynxTune && entry.effect != EffectKind::pitchCorrect && entry.effect != EffectKind::pitchShift && entry.effect != EffectKind::flPitchShifter)
             equivalents.addItem (juce::String::fromUTF8 (entry.product.c_str()) + juce::String::fromUTF8 (" \xe2\x86\x92 ") + juce::String::fromUTF8 (effectInfo (entry.effect).name),
                                  [place, entry] { place (makeSubstituteSlot (entry)); });
     if (equivalents.getNumItems() > 0)
