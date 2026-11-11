@@ -150,6 +150,7 @@ bool ChannelRackComponent::muteRemovedSteps = false;
 ChannelRackComponent::ChannelRackComponent (AudioEngine& e)
     : engine (e)
 {
+    setOpaque (true);
     setWantsKeyboardFocus (false);
     setMouseClickGrabsKeyboardFocus (false);
     engine.addChangeListener (this);

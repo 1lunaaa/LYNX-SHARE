@@ -3803,6 +3803,7 @@ std::optional<EffectSlot> newAddableEffect (EffectKind kind, double bpm)
 EffectsPanel::EffectsPanel (AudioEngine& e)
     : engine (e)
 {
+    setOpaque (true);
     setWantsKeyboardFocus (false);
     setMouseClickGrabsKeyboardFocus (false);
     engine.addChangeListener (this);
