@@ -149,7 +149,7 @@ public:
     static constexpr int timelineHeight = 24;
     static constexpr int rulerTop = toolbarHeight + overviewHeight;
     static constexpr int headerHeight = rulerTop + timelineHeight;
-    static constexpr int trackHeight = 38; // the default row height (each track can be resized: P18)
+    static constexpr int trackHeight = 52; // the default row height (each track can be resized: P18)
     static constexpr int foldedHeight = 7; // a member of a collapsed group: a thin row of clip bars (as FL)
     static constexpr int groupIndent = 8;  // grouped tracks' headers are indented under their group header
     static constexpr int scrollBarSize = 12;
