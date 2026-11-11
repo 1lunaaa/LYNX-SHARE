@@ -497,6 +497,7 @@ MainComponent::MainComponent (AudioEngine& e, bool restoreUserSettings)
     workspace.onDefaultLayout = [this] { fitChannelRack (true); };
     workspace.setPersistent (persistent);
     playlist.onOpenPattern = [this] { showPanel (Panel::channelRack); };
+    playlist.onOpenPlugin = [this] (int channel) { rack.openPluginWindow (channel); };
     playlist.onOpenMixerTrack = [this] (int insert) { // double-click on an empty audio track
         showPanel (Panel::mixer);
         mixer.selectTrack (insert);

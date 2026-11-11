@@ -69,6 +69,7 @@ public:
 
     std::function<void()> onOpenPattern;
     std::function<void()> onOpenPianoRoll;
+    std::function<void (int channel)> onOpenPlugin;
     std::function<void (int pattern)> onRenamePattern;  // clip menu: Rename and color (pattern clips)
     std::function<void (int channel)> onOpenInSampler;  // clip menu: the audio clip's file in a new Sampler channel
     std::function<void (int insert)> onOpenMixerTrack; // double-click on an empty audio track: its mixer track

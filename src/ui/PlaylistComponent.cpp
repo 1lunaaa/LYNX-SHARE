@@ -6313,6 +6313,18 @@ void PlaylistComponent::mouseDoubleClick (const juce::MouseEvent& e)
             || trackArm (track).expanded (2).contains (e.getPosition()) || trackInput (track).expanded (2).contains (e.getPosition()))
             return;
 
+        const auto& plTracks = engine.getSong().playlistTracks;
+        if (track >= 0 && track < (int) plTracks.size()
+            && plTracks[(std::size_t) track].mode == PlaylistTrackMode::instrument
+            && plTracks[(std::size_t) track].channel >= 0)
+        {
+            const auto channel = plTracks[(std::size_t) track].channel;
+            engine.setSelectedChannel (channel);
+            if (onOpenPlugin)
+                onOpenPlugin (channel);
+            return;
+        }
+
         const auto& playlist = engine.getSong().playlist;
         int first = -1;
         for (int i = 0; i < (int) playlist.size(); ++i)
