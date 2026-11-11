@@ -3752,7 +3752,14 @@ const EffectKind allEffects[] = { EffectKind::eq,     EffectKind::parametricEq, 
 
 const std::vector<EffectKind>& addableEffects()
 {
-    static const std::vector<EffectKind> list (std::begin (allEffects), std::end (allEffects));
+    static const std::vector<EffectKind> list = [] {
+        std::vector<EffectKind> v;
+        for (auto k : allEffects) {
+            if (k != EffectKind::lynxTune && k != EffectKind::pitchCorrect && k != EffectKind::pitchShift && k != EffectKind::flPitchShifter)
+                v.push_back (k);
+        }
+        return v;
+    }();
     return list;
 }
 

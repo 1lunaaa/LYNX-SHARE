@@ -467,7 +467,7 @@ const std::vector<CategoryList>& flEffectFolders()
         { "Gain", { "Fruity Balance", "Fruity PanOMatic", "Fruity Send", "Fruity Stereo Enhancer", "Fruity Stereo Shaper", "Spreader",
                     /* legacy */ "Fruity Center", "Fruity Mute 2", "Fruity Phase Inverter" } },
         { "Misc", { "Edison", "Effector", "FL Studio Mobile Rack FX", "Frequency Shifter", "Fruity LSD", "Fruity Scratcher", "Fruity Vocoder", "Gross Beat",
-                    "Low Lifter", "Newtime", "Newtone", "Pitch Shifter", "Pitcher", "Transmitter", "Transporter", "Vocodex" } },
+                    "Low Lifter", "Newtime", "Newtone", "Transmitter", "Transporter", "Vocodex" } },
         { "Patcher", { "Patcher", "VFX Color Mapper", "VFX Envelope", "VFX Key Mapper", "VFX Keyboard Splitter", "VFX Level Scaler", "VFX Script", "VFX Sequencer" } },
         { "Visual", { "Fruity Big Clock", "Fruity HTML NoteBook", "Fruity NoteBook 2", "Fruity NoteBook", "Fruity Spectroman", "Fruity dB Meter", "Razer Chroma",
                       "Tuner", "Wave Candy", "ZGameEditor Visualizer", /* LYNX's name of it */ "Visualizer" } },
