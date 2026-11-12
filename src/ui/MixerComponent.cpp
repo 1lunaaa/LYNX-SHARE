@@ -4029,8 +4029,8 @@ juce::Rectangle<int> EffectsPanel::eqFaderBounds (int band) const
 
 juce::Rectangle<int> EffectsPanel::eqKnobBounds (int band, int what) const
 {
-    const auto fader = eqFaderBounds (band);
-    return { fader.getCentreX() - 11, eqGraphBounds().getBottom() + 2 + (what - 1) * 22, 22, 22 };
+    juce::ignoreUnused (band, what);
+    return {};
 }
 
 juce::Rectangle<int> EffectsPanel::outputBounds() const
@@ -4183,28 +4183,12 @@ void EffectsPanel::paintEq (juce::Graphics& g)
             g.setColour (eqBandColour (b));
             g.fillRect (juce::Rectangle<float> (fader.getWidth() - 6.0f, 1.5f).withCentre ({ fader.getCentreX(), y }));
 
-            for (int what = 1; what <= 2; ++what)
-            {
-                const auto code = eqParamBase - b * 3 - what;
-                drawKnob (g, eqKnobBounds (b, what).toFloat().reduced (2.0f), eqToValue (eq, b, what), false, eqBandColour (b),
-                          hoverEq == code || dragParam == code);
-            }
         }
 
-        // the knob captions take the width their (translated) text needs, the title gives way (round 165o)
-        const juce::Font captionFont (font (type::caption));
-        const auto captionWidth = juce::jlimit (32, 70, (int) std::ceil (juce::jmax (juce::GlyphArrangement::getStringWidth (captionFont, tr ("Freq")),
-                                                                                     juce::GlyphArrangement::getStringWidth (captionFont, tr ("Width")))) + 2);
         g.setColour (colour::textSecondary);
         g.setFont (font (type::title));
-        textcache::drawText (g, tr ("Equalizer"), 10, eqGraphBounds().getBottom() + 4, eqKnobBounds (0, 1).getX() - 8 - captionWidth, 20,
+        textcache::drawText (g, tr ("Equalizer"), 10, eqGraphBounds().getBottom() + 4, getWidth() - 20, 20,
                              juce::Justification::centredLeft);
-        g.setFont (captionFont);
-        g.setColour (colour::textDisabled);
-        textcache::drawText (g, tr ("Freq"), eqKnobBounds (0, 1).getX() - 2 - captionWidth, eqKnobBounds (0, 1).getY(), captionWidth, 22,
-                             juce::Justification::centredRight);
-        textcache::drawText (g, tr ("Width"), eqKnobBounds (0, 2).getX() - 2 - captionWidth, eqKnobBounds (0, 2).getY(), captionWidth, 22,
-                             juce::Justification::centredRight);
     }
 
     // the audio output target

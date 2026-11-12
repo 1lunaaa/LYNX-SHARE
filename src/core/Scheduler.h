@@ -226,5 +226,8 @@ void scheduleSongAround (const Song& song, const TrackMask& taken, const TrackMa
 // One clip played once where it is (no song loop), its events in the block (not sorted): Performance mode's passes.
 void scheduleSingleClip (const Song& song, const Clip& clip, std::size_t clipIndex, double startTick, int numSamples, double tps,
                          EventBuffer& out, const ScheduleIndex* index = nullptr) noexcept;
+
+void scheduleUnmutedClips (const Song& prevSong, const Song& song, double startTick, int numSamples, double tps,
+                           EventBuffer& out, const ScheduleIndex* index, bool wrap, bool chase) noexcept;
 // (wrap = false: the song plays once and is silent past its end — audio recording without a loop region, round 163)
 } // namespace lynx

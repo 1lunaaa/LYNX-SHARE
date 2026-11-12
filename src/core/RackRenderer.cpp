@@ -2241,7 +2241,7 @@ void RackRenderer::renderChannel (const RackState& state, int i, int n) noexcept
                     instrument.setNextClipPitch (e.clipPitch);
                 if (e.clipStretch != 1.0f)
                     instrument.setNextClipStretch (e.clipStretch);
-                if (e.fadeIn > 0.0f || e.fadeOut > 0.0f || e.fadeShape != 0)
+                if (e.clipRemaining > 0.0f || e.fadeIn > 0.0f || e.fadeOut > 0.0f || e.fadeShape != 0)
                     instrument.setNextClipFades (e.clipElapsed, e.clipRemaining, e.fadeIn, e.fadeOut, e.fadeShape, e.fadeInTension, e.fadeOutTension);
 
                 // an echo's volume: the instrument scales the voice, else (engines without it) the velocity
@@ -2671,6 +2671,7 @@ void RackRenderer::process (const RackState* state,
         }
         scheduledNotes->moveChannels (state->channelFrom); // (round 169d)
     }
+    const auto* prevState = lastState;
     lastState = state; // so prepare() knows which instruments to reconfigure
     lastSerial = state->serial;
 
@@ -2694,6 +2695,8 @@ void RackRenderer::process (const RackState* state,
     if (playing != wasPlaying || jumped)
         scheduledNotes->clear();
 
+    if ((wasPlaying && ! playing) || jumped)
+        prevSongForUnmute = nullptr;
     if ((wasPlaying && ! playing) || jumped)
     {
         for (auto& instrument : state->instruments)
@@ -2719,8 +2722,75 @@ void RackRenderer::process (const RackState* state,
             if (state->song.channels[c].instrument == InstrumentKind::midiOut && state->instruments[c] != nullptr)
                 state->instruments[c]->transportStarted();
 
+    prevSongForUnmute = nullptr;
+    const auto stateChanged = playing && wasPlaying && ! jumped && state != prevState && prevState != nullptr;
+    auto playlistEdited = false;
+    if (stateChanged)
+    {
+        const auto& prev = prevState->song;
+        const auto& curr = state->song;
+        if (prev.playlist.size() != curr.playlist.size())
+        {
+            playlistEdited = true;
+        }
+        else
+        {
+            for (std::size_t idx = 0; idx < curr.playlist.size(); ++idx)
+            {
+                const auto& a = prev.playlist[idx];
+                const auto& b = curr.playlist[idx];
+                if (a.kind != b.kind || a.track != b.track || a.channel != b.channel || a.pattern != b.pattern
+                    || a.automation != b.automation || a.start != b.start || a.length != b.length
+                    || a.offset != b.offset || a.offsetFraction != b.offsetFraction || a.stretch != b.stretch
+                    || a.reversed != b.reversed)
+                {
+                    playlistEdited = true;
+                    break;
+                }
+            }
+        }
+
+        if (playlistEdited)
+        {
+            for (std::size_t c = 0; c < curr.channels.size() && c < state->instruments.size(); ++c)
+                if (curr.channels[c].instrument == InstrumentKind::audioClip && state->instruments[c] != nullptr)
+                    state->instruments[c]->allNotesOff();
+        }
+        else
+        {
+            // Real-time Playlist track / clip mute: silence newly muted clips immediately without disturbing other tracks
+            for (std::size_t idx = 0; idx < curr.playlist.size(); ++idx)
+            {
+                const auto& prevClip = prev.playlist[idx];
+                const auto& currClip = curr.playlist[idx];
+                const bool wasMuted = prevClip.muted || prev.isTrackMuted (prevClip.track);
+                const bool isMuted = currClip.muted || curr.isTrackMuted (currClip.track);
+                if (! wasMuted && isMuted)
+                {
+                    if (currClip.kind == ClipKind::audio
+                        && currClip.channel >= 0 && (std::size_t) currClip.channel < state->instruments.size()
+                        && state->instruments[(std::size_t) currClip.channel] != nullptr)
+                    {
+                        state->instruments[(std::size_t) currClip.channel]->noteOff (audioClipKey (idx));
+                    }
+                    else if (currClip.kind == ClipKind::pattern
+                             && currClip.pattern >= 0 && (std::size_t) currClip.pattern < curr.patterns.size())
+                    {
+                        for (const auto& note : curr.patterns[(std::size_t) currClip.pattern].notes)
+                            if (note.channel >= 0 && (std::size_t) note.channel < state->instruments.size()
+                                && state->instruments[(std::size_t) note.channel] != nullptr)
+                                state->instruments[(std::size_t) note.channel]->allNotesOff();
+                    }
+                }
+            }
+        }
+    }
+
+    if (stateChanged && ! playlistEdited)
+        prevSongForUnmute = &prevState->song;
+
     // started playing or jumped: audio clips in progress must start mid-way
-    resumeAudio = playing && (! wasPlaying || jumped);
+    resumeAudio = playing && (! wasPlaying || jumped || playlistEdited);
     // FL's "Play truncated notes on transport": at the start of playback, and after the user moves the position while
     // playing (FL's set-position FUN_011e7a10 → FUN_011e78a0 → FUN_011e7470 with its catch-up flag set, round 167k),
     // the notes already sounding there play. The loop's wrap is not a set-position and chases nothing.
@@ -3295,6 +3365,11 @@ void RackRenderer::processChunk (const RackState& state, bool playing, double st
                 runningLauncher = nullptr;
             }
             scheduleSong (song, startTick, numSamples, tps, events, resumeAudio, &state.schedule, wrap, chaseNotes);
+            if (prevSongForUnmute != nullptr)
+            {
+                scheduleUnmutedClips (*prevSongForUnmute, song, startTick, numSamples, tps, events, &state.schedule, wrap, playTruncatedOnTransport);
+                prevSongForUnmute = nullptr;
+            }
         }
         // Performance mode (round 165m): the launched clips, on the Player's steady clock (the transport's ticks from
         // where playback started, never wrapping with the song loop)
@@ -3316,8 +3391,16 @@ void RackRenderer::processChunk (const RackState& state, bool playing, double st
     else
     {
         if (songPlaying)
+        {
+            const auto wrap = liveInput == nullptr || ! liveInput->linearSong.load (std::memory_order_relaxed);
             scheduleSong (song, startTick, numSamples, ticksPerSample (bpm, sampleRate), events, resumeAudio, &state.schedule,
-                          liveInput == nullptr || ! liveInput->linearSong.load (std::memory_order_relaxed), chaseNotes);
+                          wrap, chaseNotes);
+            if (prevSongForUnmute != nullptr)
+            {
+                scheduleUnmutedClips (*prevSongForUnmute, song, startTick, numSamples, ticksPerSample (bpm, sampleRate), events, &state.schedule, wrap, playTruncatedOnTransport);
+                prevSongForUnmute = nullptr;
+            }
+        }
         if (launchersRunning || (perfLive != nullptr && perfLive->anyPlaying.load (std::memory_order_relaxed)))
         {
             perfPlayer.process (song, state.performanceZone, perfLive, perfClock, startTick, 0.0, false);

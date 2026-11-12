@@ -487,6 +487,7 @@ private:
     bool playTruncatedOnTransport = true, resetPluginsOnTransport = false;
     unsigned userJumpSerial = 0, seenUserJumpSerial = 0;
     const RackState* lastState = nullptr;
+    const Song* prevSongForUnmute = nullptr;
     std::uint64_t lastSerial = 0;
     std::vector<VoiceOrder> voiceOrderScratch;   // (round 168s: moving the note state with moved channels)
     std::vector<NoteMask> heldScratch;

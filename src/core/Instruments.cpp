@@ -1613,7 +1613,7 @@ public:
         declickMode.store (std::clamp (s.declickMode, 0, 5));
         // with "keep pitch" the sample arrives already stretched (RackState): play at normal speed; the keys then
         // transpose it through each voice's pitch shifter (round 162), so its length stays
-        stretchBeats.store (s.keepPitch ? 0.0f : std::max (0.0f, s.stretchBeats));
+        stretchBeats.store (std::max (0.0f, s.stretchBeats));
         // keep length (round 163): with "keep pitch" a transposition never changes the length — the keys of a sampler, the
         // pitch knob and the fine tune of a sampler or an audio clip go through each voice's pitch shifter, stretched to
         // the tempo or not
@@ -2375,11 +2375,58 @@ public:
         const flvp::X87Extended precision; // FL's interpolators run the x87 unit at 64-bit precision
 
         auto primeBudget = offlineRendering() ? keyShiftVoices : 2;
+        const auto livePitch = (double) pitch.load (std::memory_order_relaxed);
+        const auto liveKeepPitch = keyShift.load (std::memory_order_relaxed);
+
         for (auto& v : voices)
         {
             if (! v.active || v.data == nullptr || v.flVoice)
                 continue;
-            if (auto& ks = shifts[(std::size_t) (&v - voices.data())]; ks.on && ! primeKeyShift (v, ks, primeBudget))
+
+            // Actualizacion en tiempo real de Time (stretchBeats) y Pitch mientras suena el clip/sample
+            auto& ks = shifts[(std::size_t) (&v - voices.data())];
+            if (v.glideLeft <= 0 && v.rate != 0.0)
+            {
+                const auto dir = v.rate < 0.0 ? -1.0 : 1.0;
+                const auto liveBase = baseRate (*v.data);
+                if (liveBase > 0.0)
+                {
+                    v.rate = dir * liveBase;
+                    if (ks.on)
+                        ks.ahead.rate = v.rate;
+                }
+            }
+            if (clipMode)
+            {
+                const auto liveStretch = stretchBeats.load (std::memory_order_relaxed);
+                const auto needShift = liveKeepPitch && (std::abs (livePitch) > 1.0e-6 || liveStretch > 0.0f);
+                if (needShift)
+                {
+                    v.pitchMul = 1.0;
+                    if (! ks.on)
+                    {
+                        const auto shiftSemis = std::abs (livePitch) > 1.0e-6 ? livePitch : 1.0e-4;
+                        startKeyShift (v, shiftSemis, std::abs (v.rate), false);
+                    }
+                    if (ks.on)
+                    {
+                        ks.factor = std::exp2 (livePitch / 12.0);
+                        ks.ahead.rate = v.rate;
+                    }
+                }
+                else
+                {
+                    if (ks.on && ! liveKeepPitch)
+                    {
+                        ks.on = false;
+                        ks.shifter = nullptr;
+                    }
+                    if (! ks.on)
+                        v.pitchMul = livePitch != 0.0 ? std::exp2 (livePitch / 12.0) : 1.0;
+                }
+            }
+
+            if (ks.on && ! primeKeyShift (v, ks, primeBudget))
                 continue; // (its shifter primes in the next block)
 
             const auto* l = v.data->leftData();

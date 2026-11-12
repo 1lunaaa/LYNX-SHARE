@@ -2600,8 +2600,11 @@ Clip PlaylistComponent::makeBrushClip (int track, std::int64_t start) const
         c.channel = brush.index;
         c.pattern = 0;
 
-        // audio length in ticks at the current BPM
-        if (auto data = engine.getSampleLibrary().load (juce::String::fromUTF8 (song.channels[(std::size_t) brush.index].samplePath.c_str())))
+        // audio length in ticks at the current BPM (respecting Time stretch)
+        const auto& ch = song.channels[(std::size_t) brush.index];
+        if (ch.sampler.stretchBeats > 0.0f)
+            c.length = juce::jmax<std::int64_t> (ppq / 4, (std::int64_t) std::llround ((double) ch.sampler.stretchBeats * ppq));
+        else if (auto data = engine.getSampleLibrary().load (juce::String::fromUTF8 (ch.samplePath.c_str())))
             c.length = juce::jmax<std::int64_t> (ppq / 4, (std::int64_t) ((double) data->frames() / data->sampleRate * song.bpm / 60.0 * ppq));
     }
     else if (brush.kind == ClipKind::automation && brush.index >= 0 && brush.index < (int) song.automations.size())
@@ -3280,8 +3283,25 @@ void PlaylistComponent::mouseDown (const juce::MouseEvent& e)
 
         const auto& c = engine.getSong().playlist[(std::size_t) hit];
 
-        if (c.kind == ClipKind::pattern && c.pattern != engine.getSong().currentPattern)
-            engine.editSong ([p = c.pattern] (Song& s) { s.currentPattern = p; }, false);
+        if (c.kind == ClipKind::pattern)
+        {
+            brush = {};
+            if (c.pattern != engine.getSong().currentPattern)
+                engine.editSong ([p = c.pattern] (Song& s) { s.currentPattern = p; }, false);
+        }
+        else if (c.kind == ClipKind::audio)
+        {
+            brush.kind = ClipKind::audio;
+            brush.index = c.channel;
+            engine.setSelectedChannel (c.channel);
+            engine.sendChangeMessage();
+        }
+        else if (c.kind == ClipKind::automation)
+        {
+            brush.kind = ClipKind::automation;
+            brush.index = c.automation;
+            engine.sendChangeMessage();
+        }
         return;
     }
 

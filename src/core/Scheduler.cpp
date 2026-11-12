@@ -523,6 +523,37 @@ void scheduleSong (const Song& song, double startTick, int numSamples, double tp
 
     out.sortByOffset();
 }
+
+void scheduleUnmutedClips (const Song& prevSong, const Song& song, double startTick, int numSamples, double tps,
+                           EventBuffer& out, const ScheduleIndex* index, bool wrap, bool chase) noexcept
+{
+    if (numSamples <= 0 || tps <= 0.0 || song.playlist.empty())
+        return;
+
+    const auto endTick = startTick + numSamples * tps;
+    auto loop = index != nullptr ? index->songLength : song.songLength();
+    if (! wrap)
+        loop = std::max<std::int64_t> (loop, (std::int64_t) std::ceil (endTick) + 1) * 2;
+    const auto loopStart = std::fmod (startTick, (double) loop);
+    const auto loopEnd = loopStart + (endTick - startTick);
+    const auto zoneEnd = song.performanceZoneEnd();
+
+    bool added = false;
+    for (std::size_t clipIndex = 0; clipIndex < song.playlist.size() && clipIndex < prevSong.playlist.size(); ++clipIndex)
+    {
+        const auto& prevClip = prevSong.playlist[clipIndex];
+        const auto& clip = song.playlist[clipIndex];
+        const bool wasMuted = prevClip.muted || prevSong.isTrackMuted (prevClip.track);
+        const bool isMuted = clip.muted || song.isTrackMuted (clip.track);
+        if (! wasMuted || isMuted || clip.start < zoneEnd)
+            continue;
+
+        scheduleClip (song, clip, clipIndex, startTick, endTick, numSamples, tps, loop, loopStart, loopEnd, true, index, out, chase);
+        added = true;
+    }
+    if (added)
+        out.sortByOffset();
+}
 void scheduleSongAround (const Song& song, const TrackMask& taken, const TrackMask& givenBack, double startTick, int numSamples,
                          double tps, EventBuffer& out, bool resume, const ScheduleIndex* index, bool wrap, bool chase) noexcept
 {

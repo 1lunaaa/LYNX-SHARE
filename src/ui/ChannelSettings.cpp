@@ -2901,7 +2901,7 @@ public:
     {
         setup (pitch, pitchLabel, TR_NOOP ("Pitch"), -24.0, 24.0, 0.01, " st");
         pitch.setTooltip (tr ("The sample's pitch in semitones (0.5 = 50 cents). The Piano Roll's keys play it chromatically around its root note (Misc › Root note, C5 by default); right-click the channel › Pitch... for semitones + cents"));
-        setup (gain, gainLabel, TR_NOOP ("Gain"), -24.0, 24.0, 0.1, " dB");
+        setup (gain, gainLabel, TR_NOOP ("Gain"), -24.0, 24.0, 0.1, "");
         gain.textFromValueFunction = [] (double v) { return (v > 0.04 ? "+" : "") + juce::String (std::abs (v) < 0.05 ? 0.0 : v, 1) + " dB"; };
         gain.valueFromTextFunction = [] (const juce::String& t) { return t.retainCharacters ("+-0123456789.,").replaceCharacter (',', '.').getDoubleValue(); };
         gain.setTooltip (tr ("Sample gain: boosts or cuts the sample's level before the channel volume (-24 to +24 dB, double-click = 0 dB)"));
@@ -2910,10 +2910,30 @@ public:
         setup (release, releaseLabel, TR_NOOP ("Release"), 0.0, 4.0, 0.001, " s");
         setup (decay, decayLabel, TR_NOOP ("Decay"), 0.0, 10.0, 0.001, " s");
         setup (sustain, sustainLabel, TR_NOOP ("Sustain"), 0.0, 1.0, 0.01, "");
-        setup (stretch, stretchLabel, TR_NOOP ("Stretch"), 0.0, 1024.0, 0.01, " beats");
+        setup (stretch, stretchLabel, TR_NOOP ("Time"), 0.0, 128.0, 0.01, " beats");
         // issue #32 #7: "Fit to tempo" sets exact lengths (16.45 beats for a loop with a tail, 128 for 32 bars); the knob used
         // to round them to 0.25 and cap them at 64, and every other edit in this panel wrote the rounded value back
-        stretch.setSkewFactorFromMidPoint (16.0);
+        stretch.setSkewFactorFromMidPoint (32.0);
+        stretch.setMouseDragSensitivity (180);
+        stretch.onValueChange = [this] {
+            if (stretch.isMouseButtonDown()
+                && ! juce::ModifierKeys::currentModifiers.isShiftDown()
+                && ! juce::ModifierKeys::currentModifiers.isCommandDown())
+            {
+                const auto v = stretch.getValue();
+                const auto nearest = std::round (v);
+                if (std::abs (v - nearest) <= 0.46)
+                    stretch.setValue (nearest, juce::dontSendNotification);
+            }
+            apply (&stretch);
+        };
+        stretch.onDragStart = [] {
+            auto m = juce::Desktop::getInstance().getMainMouseSource();
+            if (m.isDragging()) m.enableUnboundedMouseMovement (true, false);
+        };
+        stretch.onDragEnd = [] {
+            juce::Desktop::getInstance().getMainMouseSource().enableUnboundedMouseMovement (false, true);
+        };
         stretch.addMouseListener (&stretchMenu, false);
         setup (regionStart, regionStartLabel, TR_NOOP ("Start"), 0.0, 1.0, 0.001, "");
         setup (regionEnd, regionEndLabel, TR_NOOP ("End"), 0.0, 1.0, 0.001, "");
@@ -2943,7 +2963,7 @@ public:
         release.setSkewFactorFromMidPoint (0.4);
         release.setTooltip (tr ("0 = the whole sample plays (one-shot), like FL's steps"));
 
-        keepPitch.setButtonText (tr ("Keep length (stretch engine)"));
+        keepPitch.setButtonText (tr ("Keep pitch"));
         keepPitch.setTooltip (tr ("On: the pitch, the fine tune and the keys change the pitch without changing the length, and \"Stretch\" changes the length without changing the pitch (like FL's Stretch modes). Off: resample, pitch and speed change together"));
         keepPitch.onClick = [this] { apply(); };
         addAndMakeVisible (keepPitch);
@@ -2997,7 +3017,7 @@ public:
 
         refresh();
         engine.addChangeListener (this);
-        setSize (420, 676);
+        setSize (420, 520);
         if (ref.index >= 0)
             startTimerHz (30); // the knobs follow their automation while the song plays (issue #12)
     }
@@ -3006,64 +3026,70 @@ public:
 
     void resized() override
     {
-        auto area = getLocalBounds().reduced (12);
-        wave.setBounds (area.removeFromTop (92));
+        auto area = getLocalBounds().reduced (10);
+        wave.setBounds (area.removeFromTop (84));
         area.removeFromTop (8);
-        auto place = [] (juce::Rectangle<int> row, std::initializer_list<std::pair<juce::Slider*, juce::Label*>> items) {
-            const auto w = row.getWidth() / 3;
 
-            for (auto [slider, label] : items)
-            {
-                auto column = row.removeFromLeft (w);
-                label->setBounds (column.removeFromTop (18));
-                slider->setBounds (column);
-            }
+        auto placeKnob = [] (juce::Rectangle<int> cell, juce::Slider& s, juce::Label& l) {
+            l.setFont (theme::font (theme::type::caption));
+            l.setBounds (cell.removeFromTop (14));
+            const auto kw = juce::jmin (cell.getWidth(), 64);
+            const auto kh = juce::jmin (cell.getHeight(), 56);
+            s.setBounds (cell.withSizeKeepingCentre (kw, kh));
         };
 
-        auto top = area.removeFromTop (110);
+        // Fila 1: Gain + Time stretching (Pitch, Time, Keep pitch, Mode)
+        auto top = area.removeFromTop (76);
         {
-            // Gain, Pitch, Stretch and the keep-pitch switch (a third of the width: its text is long)
-            const auto w4 = top.getWidth() * 2 / 9;
-            for (auto [slider, label] : { std::pair { &gain, &gainLabel }, { &pitch, &pitchLabel }, { &stretch, &stretchLabel } })
-            {
-                auto column = top.removeFromLeft (w4);
-                label->setBounds (column.removeFromTop (18));
-                slider->setBounds (column);
-            }
-            auto column = top.withSizeKeepingCentre (juce::jmin (top.getWidth(), 140), juce::jmin (top.getHeight(), 64));
-            keepPitch.setBounds (column.removeFromTop (column.getHeight() / 2));
-            stretchMethod.setBounds (column.withSizeKeepingCentre (column.getWidth(), juce::jmin (column.getHeight(), 24)));
-        }
-        area.removeFromTop (6);
-        auto envelope = area.removeFromTop (110);
-        const auto w = envelope.getWidth() / 4;
-
-        for (auto [slider, label] : { std::pair { &attack, &attackLabel }, { &decay, &decayLabel }, { &sustain, &sustainLabel }, { &release, &releaseLabel } })
-        {
-            auto column = envelope.removeFromLeft (w);
-            label->setBounds (column.removeFromTop (18));
-            slider->setBounds (column);
+            const auto kw = 64;
+            placeKnob (top.removeFromLeft (kw), gain, gainLabel);
+            top.removeFromLeft (6);
+            placeKnob (top.removeFromLeft (kw), pitch, pitchLabel);
+            placeKnob (top.removeFromLeft (kw), stretch, stretchLabel);
+            top.removeFromLeft (8);
+            auto rightCol = top.withSizeKeepingCentre (top.getWidth(), 48);
+            keepPitch.setBounds (rightCol.removeFromTop (22));
+            rightCol.removeFromTop (4);
+            stretchMethod.setBounds (rightCol.removeFromTop (22));
         }
 
         area.removeFromTop (8);
-        area.removeFromTop (6);
-        place (area.removeFromTop (110), { { &regionStart, &regionStartLabel }, { &regionEnd, &regionEndLabel } });
-        area.removeFromTop (6);
+
+        // Fila 2: Envelope (Attack, Decay, Sustain, Release)
+        auto envRow = area.removeFromTop (74);
         {
-            auto filterRow = area.removeFromTop (110);
-            filterType.setBounds (filterRow.removeFromRight (filterRow.getWidth() / 3).withSizeKeepingCentre (124, 24));
-            place (filterRow.withWidth (filterRow.getWidth() * 3 / 2), { { &cutoff, &cutoffLabel }, { &resonance, &resonanceLabel } });
+            const auto w = envRow.getWidth() / 4;
+            for (auto [slider, label] : { std::pair { &attack, &attackLabel }, { &decay, &decayLabel }, { &sustain, &sustainLabel }, { &release, &releaseLabel } })
+                placeKnob (envRow.removeFromLeft (w), *slider, *label);
         }
+
+        area.removeFromTop (8);
+
+        // Fila 3: Region (Start, End)
+        auto midRow = area.removeFromTop (74);
         {
-            auto buttons = area.removeFromBottom (26);
-            const auto half = buttons.getWidth() / 2;
-            modulationButton.setBounds (buttons.removeFromLeft (half).reduced (4, 0));
-            precomputeButton.setBounds (buttons.reduced (4, 0));
+            placeKnob (midRow.removeFromLeft (64), regionStart, regionStartLabel);
+            placeKnob (midRow.removeFromLeft (64), regionEnd, regionEndLabel);
+            cutoff.setVisible (false);
+            cutoffLabel.setVisible (false);
+            resonance.setVisible (false);
+            resonanceLabel.setVisible (false);
+            filterType.setVisible (false);
         }
-        area.removeFromTop (6);
-        reverse.setBounds (area.removeFromLeft (150).removeFromTop (24));
-        cut.setBounds (area.removeFromLeft (130).removeFromTop (24));
-        porta.setBounds (area.removeFromLeft (100).removeFromTop (24));
+
+        area.removeFromTop (8);
+
+        // Fila 4: Opciones del canal (Reverse, Cut itself, Porta)
+        auto flagsRow = area.removeFromTop (22);
+        reverse.setBounds (flagsRow.removeFromLeft (115));
+        cut.setBounds (flagsRow.removeFromLeft (115));
+        porta.setBounds (flagsRow.removeFromLeft (100));
+
+        // Botones inferiores (Modulation / Precomputed effects)
+        auto buttons = area.removeFromBottom (26);
+        const auto half = buttons.getWidth() / 2;
+        modulationButton.setBounds (buttons.removeFromLeft (half).reduced (3, 0));
+        precomputeButton.setBounds (buttons.reduced (3, 0));
     }
 
     int getChannel() const noexcept { return ref.index; }
@@ -3131,13 +3157,16 @@ private:
     void setup (juce::Slider& s, juce::Label& label, const char* name, double lo, double hi, double step, const char* suffix)
     {
         s.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-        s.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 70, 18);
+        s.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 58, 15);
+        s.setMouseDragSensitivity (650);
+        s.setVelocityBasedMode (false);
         s.setRange (lo, hi, step);
         s.setTextValueSuffix (suffix);
         s.setDoubleClickReturnValue (true, 0.0);
         s.onValueChange = [this, &s] { apply (&s); };
         label.setText (tr (name), juce::dontSendNotification);
         label.setJustificationType (juce::Justification::centred);
+        label.setFont (theme::font (theme::type::caption));
         addAndMakeVisible (s);
         addAndMakeVisible (label);
     }
@@ -3291,11 +3320,34 @@ private:
             return;
 
         const auto before = current()->sampler;
-        ref.edit (engine, [s, cutChanged, index = ref.index] (ChannelDef& channelDef) {
-            channelDef.sampler = s;
-            if (cutChanged)
-                setChannelCutsItself (channelDef, index, s.cut);
-        });
+        const auto sample = engine.getSampleLibrary().load (juce::String::fromUTF8 ((current()->samplePath.empty() && ! current()->zones.empty() ? current()->zones.front().path : current()->samplePath).c_str()));
+        const auto frames = sample != nullptr ? (double) sample->frames() : 0.0;
+        const auto rate = sample != nullptr ? sample->sampleRate : 0.0;
+        const auto stretchChanged = std::abs (s.stretchBeats - before.stretchBeats) > 1.0e-5f || s.keepPitch != before.keepPitch;
+
+        if (stretchChanged && ref.index >= 0)
+        {
+            engine.editSong ([s, cutChanged, index = ref.index, frames, rate] (Song& song) {
+                if (! juce::isPositiveAndBelow (index, (int) song.channels.size()))
+                    return;
+                auto& channelDef = song.channels[(std::size_t) index];
+                const auto beforeTicks = clipops::fileTicks (channelDef, frames, rate, song.bpm);
+                channelDef.sampler = s;
+                if (cutChanged)
+                    setChannelCutsItself (channelDef, index, s.cut);
+                const auto afterTicks = clipops::fileTicks (channelDef, frames, rate, song.bpm);
+                if (beforeTicks > 0.0 && afterTicks > 0.0 && std::abs (beforeTicks - afterTicks) > 1.0e-3)
+                    clipops::rescaleClipsOf (song, index, beforeTicks, afterTicks);
+            });
+        }
+        else
+        {
+            ref.edit (engine, [s, cutChanged, index = ref.index] (ChannelDef& channelDef) {
+                channelDef.sampler = s;
+                if (cutChanged)
+                    setChannelCutsItself (channelDef, index, s.cut);
+            });
+        }
         for (const auto& [slider, param] : tweakTargets)
             if (std::abs (samplerparam::get (before, param) - samplerparam::get (s, param)) > 1.0e-6f)
                 engine.noteTweaked ({ AutomationTargetKind::channelParam, ref.index, 0, param });
@@ -3342,7 +3394,21 @@ private:
         const auto& song = engine.getSong();
         const auto sample = engine.getSampleLibrary().load (juce::String::fromUTF8 (c->samplePath.c_str()));
         const auto now = c->sampler.stretchBeats;
-        auto set = [this] (float beats) { ref.edit (engine, [beats] (ChannelDef& d) { d.sampler.stretchBeats = beats; }); };
+        auto set = [this, sample] (float beats) {
+            if (ref.index < 0) return;
+            const auto frames = sample != nullptr ? (double) sample->frames() : 0.0;
+            const auto rate = sample != nullptr ? sample->sampleRate : 0.0;
+            engine.editSong ([index = ref.index, beats, frames, rate] (Song& song) {
+                if (! juce::isPositiveAndBelow (index, (int) song.channels.size()))
+                    return;
+                auto& channelDef = song.channels[(std::size_t) index];
+                const auto beforeTicks = clipops::fileTicks (channelDef, frames, rate, song.bpm);
+                channelDef.sampler.stretchBeats = beats;
+                const auto afterTicks = clipops::fileTicks (channelDef, frames, rate, song.bpm);
+                if (beforeTicks > 0.0 && afterTicks > 0.0 && std::abs (beforeTicks - afterTicks) > 1.0e-3)
+                    clipops::rescaleClipsOf (song, index, beforeTicks, afterTicks);
+            });
+        };
         juce::PopupMenu m;
         m.addItem (tr ("(none)"), true, now <= 0.0f, [set] { set (0.0f); });
         m.addItem (tr ("Autodetect"), sample != nullptr, false, [set, sample, bpm = song.bpm] { set (tempodetect::fitBeatsOf (sample.get(), bpm)); });
@@ -4574,20 +4640,10 @@ public:
             arp.removeFromLeft (6);
             row (arp, { arpRange, arpGate, arpRepeat });
         }
-        bottom.removeFromLeft (6);
-        {
-            auto echo = section (bottom, tr ("Echo delay / fat mode"));
-            {
-                // seven knobs (round 151 added Mod X / Y): narrower when the window is
-                auto line = echo.removeFromTop (knobH);
-                const auto w = juce::jmin (knobW, line.getWidth() / 7);
-                for (auto* k : { echoFeed, echoPan, echoModX, echoModY, echoPitch, echoTime, echoCount })
-                    k->setBounds (line.removeFromLeft (w));
-            }
-            auto toggles = echo.removeFromTop (22);
-            pingPong.setBounds (toggles.removeFromLeft (100));
-            fatMode.setBounds (toggles.removeFromLeft (100));
-        }
+        for (auto* k : { echoFeed, echoPan, echoModX, echoModY, echoPitch, echoTime, echoCount })
+            if (k != nullptr) k->setVisible (false);
+        pingPong.setVisible (false);
+        fatMode.setVisible (false);
         area.removeFromTop (6);
         {
             auto rootRow = section (area.removeFromTop (74), tr ("Root note"));
@@ -5314,6 +5370,7 @@ bool hasChannelSettings (InstrumentKind kind) noexcept
     {
         case InstrumentKind::synth:
         case InstrumentKind::sampler:
+        case InstrumentKind::audioClip:
         case InstrumentKind::controller:
         case InstrumentKind::midiOut:
         case InstrumentKind::sakura:
