@@ -201,17 +201,7 @@ private:
             std::abort();
         else if (message.hasType ("showEditor") && plugin != nullptr && plugin->hasEditor())
         {
-            if (window == nullptr)
-            {
-                window = std::make_unique<SandboxWindow> (plugin->getName());
-                if (auto* ed = plugin->createEditorIfNeeded())
-                    window->setContentOwned (ed, true);
-                window->centreWithSize (window->getWidth(), window->getHeight());
-            }
-            if (! window->isOnDesktop())
-                window->addToDesktop(); // (the native window exists before it is shown: its owner is set first)
-            window->setAlwaysOnTop (! window->setOwner ((juce::int64) message["owner"]));
-            window->setVisible (true);
+            if (window == nullptr) { window = std::make_unique<SandboxWindow> (plugin->getName()); window->addToDesktop(); window->setAlwaysOnTop (! window->setOwner ((juce::int64) message["owner"])); window->setVisible (true); if (auto* ed = plugin->createEditorIfNeeded()) window->setContentOwned (ed, true); window->centreWithSize (window->getWidth(), window->getHeight()); } else { if (! window->isOnDesktop()) window->addToDesktop(); window->setAlwaysOnTop (! window->setOwner ((juce::int64) message["owner"])); window->setVisible (true); }
             window->toFront (true);
         }
         else if (message.hasType ("hideEditor") && window != nullptr)
