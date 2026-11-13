@@ -183,7 +183,7 @@ public:
         paintMinimap (g, *doc);
 
         g.setColour (col::textSecondary);
-        g.setFont (theme::type::small);
+        g.setFont (theme::type::smallSize);
         g.drawText (tr ("Right-click: add a plugin. Drag from an output to an input to connect. Double-click a node: its editor."),
                     getLocalBounds().removeFromBottom (20).reduced (8, 0), juce::Justification::centredLeft);
     }

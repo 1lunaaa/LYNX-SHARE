@@ -175,7 +175,7 @@ public:
         g.drawText (caps (tr ("Children")) + "  " + juce::String ((int) kids.size()), list.removeFromTop (20).reduced (8, 0), juce::Justification::centredLeft);
         if (kids.empty())
         {
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             g.setColour (colour::textDisabled);
             g.drawFittedText (channel >= 0 ? tr ("No children yet: select channels in the Channel Rack, then press Set children.")
                                            : tr ("No children yet: cable the Children pin to the generators this Layer plays."),
@@ -201,7 +201,7 @@ public:
             fillRoundRect (g, meter.withWidth (juce::roundToInt ((float) meter.getWidth() * gain)).toFloat(), 2.0f,
                            gain > 0.0f ? colour::accent : colour::bg4);
             auto region = r.removeFromRight (90);
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             g.setColour (c.muted ? colour::textDisabled : colour::textPrimary);
             g.drawText (text (c.name), r, juce::Justification::centredLeft, true);
             g.setColour (colour::textSecondary);

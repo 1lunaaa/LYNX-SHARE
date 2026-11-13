@@ -87,7 +87,7 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         g.setColour (theme::colour::textSecondary);
         g.drawText (text.toUpperCase(), 0, 0, getWidth(), getHeight() - 6, juce::Justification::bottomLeft);
         g.setColour (theme::colour::border);
@@ -109,7 +109,7 @@ inline juce::Label& styleLabel (juce::Label& label, const juce::String& text, bo
 inline void styleNote (juce::Label& label, const juce::String& text)
 {
     styleLabel (label, text);
-    label.setFont (theme::font (theme::type::small));
+    label.setFont (theme::font (theme::type::smallSize));
     label.setColour (juce::Label::textColourId, theme::colour::textDisabled);
     label.setJustificationType (juce::Justification::topLeft);
 }

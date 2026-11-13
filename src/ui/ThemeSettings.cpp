@@ -339,7 +339,7 @@ public:
         g.setFont (font (type::body, true));
         g.drawText (getButtonText(), inner.removeFromTop (inner.getHeight() / 2), juce::Justification::bottomLeft, true);
         g.setColour (colour::textSecondary);
-        g.setFont (monoFont (type::small));
+        g.setFont (monoFont (type::smallSize));
         g.drawText (note.isNotEmpty() ? note : juce::String (themes::toHex (this->colour.getARGB())), inner, juce::Justification::topLeft, true);
     }
 };
@@ -558,7 +558,7 @@ private:
                                   { palette.onAccent == 0xffffffff ? tr ("white") : tr ("dark"), juce::String (ratio, 1),
                                     juce::String (themes::contrastRatio (palette.textPrimary, palette.bg2), 1) }),
                               juce::dontSendNotification);
-        contrastNote.setFont (theme::font (theme::type::small));
+        contrastNote.setFont (theme::font (theme::type::smallSize));
         contrastNote.setColour (juce::Label::textColourId, theme::colour::textSecondary);
 
         // the preset list: built-in, then the user's own

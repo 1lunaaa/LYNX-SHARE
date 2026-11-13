@@ -306,7 +306,7 @@ void HintBar::paint (juce::Graphics& g)
     // the value, in a pill on the right (accent while it changes under the mouse)
     if (current.value.isNotEmpty())
     {
-        const juce::Font valueFont (font (type::small, true));
+        const juce::Font valueFont (font (type::smallSize, true));
         const auto w = juce::jmin (r.getWidth() / 3.0f, juce::GlyphArrangement::getStringWidth (valueFont, current.value) + 18.0f);
         const auto valueArea = r.removeFromRight (juce::jmax (44.0f, w)).reduced (0.0f, 3.0f);
         g.setColour (live ? colour::accentMuted : colour::bg3);
@@ -326,7 +326,7 @@ void HintBar::paint (juce::Graphics& g)
     const auto text = withMarkup (current.text);
     std::vector<std::vector<Item>> lines;
 
-    const juce::Font big (font (type::small)), bigKey (font (type::caption - 1.0f, true));
+    const juce::Font big (font (type::smallSize)), bigKey (font (type::caption - 1.0f, true));
     if (auto items = makeItems (text, big, bigKey, 15.0f); layOut (items, r.getWidth(), 1, lines))
     {
         drawLine (g, lines.front(), r.withSizeKeepingCentre (r.getWidth(), 17.0f), big, bigKey, 15.0f);
@@ -502,7 +502,7 @@ void TweakReadout::paint (juce::Graphics& g)
     const auto fresh = juce::Time::getMillisecondCounterHiRes() - changedMs < 900.0;
     if (name.isNotEmpty() && value.isNotEmpty())
     {
-        const juce::Font valueFont (font (type::small, true));
+        const juce::Font valueFont (font (type::smallSize, true));
         const auto w = juce::jmin (r.getWidth() * 0.4f, juce::GlyphArrangement::getStringWidth (valueFont, value) + 14.0f);
         const auto valueArea = r.removeFromRight (juce::jmax (36.0f, w)).reduced (0.0f, 3.0f);
         g.setColour (fresh ? colour::accentMuted : colour::bg3);
@@ -521,7 +521,7 @@ void TweakReadout::paint (juce::Graphics& g)
         g.setColour (colour::textDisabled);
         g.drawFittedText (tr ("LAST TWEAKED"), caption.withTrimmedTop (2.0f).toNearestInt(), juce::Justification::bottomLeft, 1, 0.8f);
     }
-    g.setFont (font (type::small));
+    g.setFont (font (type::smallSize));
     if (name.isEmpty())
     {
         g.setColour (colour::textDisabled);

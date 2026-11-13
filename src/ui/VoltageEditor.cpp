@@ -140,7 +140,7 @@ public:
             const auto band = juce::Rectangle<int> (10, rowTop + pair * 2 * rowHeight, getWidth() - 20, 2 * rowHeight - 4).toFloat();
             fillRoundRect (g, band, radius::md, pair % 2 == 0 ? colour::bg1 : colour::bg3);
             g.setColour (colour::textSecondary);
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.drawText (pair == 0 ? tr ("Main") : tr ("Out {0}", { juce::String (pair + 1) }), band.withWidth (60.0f).toNearestInt(),
                         juce::Justification::centred);
         }

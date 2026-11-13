@@ -288,7 +288,7 @@ void SplashScreen::paint (juce::Graphics& g)
             g.setFont (font (type::title));
             g.drawText (tr ("Digital audio workstation"), 302, (int) baseline2 + 24, 240, 22, juce::Justification::centredLeft);
             g.setColour (colour::textDisabled.withAlpha (info));
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             g.drawText (tr ("Version {0}", { JUCE_APPLICATION_VERSION_STRING }), 302, (int) baseline2 + 48, 240, 18, juce::Justification::centredLeft);
         }
     }
@@ -301,7 +301,7 @@ void SplashScreen::paint (juce::Graphics& g)
         g.setColour (colour::accent);
         g.fillRoundedRectangle (bar.withWidth (bar.getWidth() * (float) easeOutCubic (juce::jmin (1.0, t / juce::jmax (0.1, barDuration)))), 1.5f);
         g.setColour (colour::textDisabled);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawText (status, juce::Rectangle<float> (24.0f, bar.getY() - 24.0f, card.getWidth() - 48.0f, 18.0f), juce::Justification::centredLeft);
     }
 

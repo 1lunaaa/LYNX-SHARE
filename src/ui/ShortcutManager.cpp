@@ -73,7 +73,7 @@ juce::String chordText (const keys::Chord& c) { return juce::String (keys::displ
 int drawChord (juce::Graphics& g, const keys::Chord& chord, int x, int centreY, bool strong)
 {
     const auto text = chordText (chord);
-    const juce::Font font (theme::font (theme::type::small, true));
+    const juce::Font font (theme::font (theme::type::smallSize, true));
     const auto w = juce::GlyphArrangement::getStringWidthInt (font, text) + 14;
     const juce::Rectangle<float> r ((float) x, (float) centreY - 10.0f, (float) w, 20.0f);
     g.setColour (strong ? theme::colour::bg5 : theme::colour::bg4);
@@ -160,7 +160,7 @@ public:
         changedOnly.onClick = [this] { refilter(); };
         addAndMakeVisible (changedOnly);
 
-        count.setFont (theme::font (theme::type::small));
+        count.setFont (theme::font (theme::type::smallSize));
         count.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         count.setJustificationType (juce::Justification::centredRight);
         addAndMakeVisible (count);
@@ -175,10 +175,10 @@ public:
         actionTitle.setFont (theme::font (theme::type::title, true));
         actionTitle.setColour (juce::Label::textColourId, theme::colour::textPrimary);
         addAndMakeVisible (actionTitle);
-        actionWhere.setFont (theme::font (theme::type::small));
+        actionWhere.setFont (theme::font (theme::type::smallSize));
         actionWhere.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (actionWhere);
-        message.setFont (theme::font (theme::type::small));
+        message.setFont (theme::font (theme::type::smallSize));
         message.setColour (juce::Label::textColourId, theme::colour::warning);
         addAndMakeVisible (message);
 
@@ -343,7 +343,7 @@ private:
         g.setFont (theme::font (theme::type::body));
         g.setColour (theme::colour::textPrimary);
         g.drawText (tr (a.description), 18, 0, width - keysWidth - whereWidth - 30, height, juce::Justification::centredLeft, true);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.setColour (theme::colour::textSecondary);
         g.drawText (contextName (a.context), width - keysWidth - whereWidth - 8, 0, whereWidth, height, juce::Justification::centredLeft, true);
 

@@ -11116,7 +11116,7 @@ private:
             {
                 const auto& l = menus[(std::size_t) m];
                 g.setColour (lynx::theme::colour::textSecondary);
-                g.setFont (lynx::theme::font (lynx::theme::type::small, true));
+                g.setFont (lynx::theme::font (lynx::theme::type::smallSize, true));
                 g.drawText (names[m], x, 0, l.width, 24, juce::Justification::centredLeft);
                 {
                     juce::Graphics::ScopedSaveState state (g);
@@ -11207,7 +11207,7 @@ private:
         juce::Graphics g (image); // (drawing is flushed when it goes out of scope)
         g.addTransform (juce::AffineTransform::scale (scale));
         g.fillAll (lynx::theme::colour::bg3);
-        g.setFont (lynx::theme::font (lynx::theme::type::small));
+        g.setFont (lynx::theme::font (lynx::theme::type::smallSize));
 
         for (int i = 1; i < lynx::iconCount; ++i)
         {

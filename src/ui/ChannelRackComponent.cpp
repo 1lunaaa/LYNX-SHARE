@@ -764,7 +764,7 @@ void ChannelRackComponent::paint (juce::Graphics& g)
         if (channel.instrument == InstrumentKind::audioClip)
         {
             g.setColour (textDisabled);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             textcache::drawText (g, tr ("audio clip — plays from the Playlist"), gridLeft() + 4, y, 400, rowHeight, juce::Justification::centredLeft);
             g.setFont (theme::font (theme::type::body));
             continue;
@@ -848,7 +848,7 @@ void ChannelRackComponent::paint (juce::Graphics& g)
     paintLane (g);
     const auto addY = rowY ((int) song.channels.size());
     g.setColour (textDisabled);
-    g.setFont (theme::font (theme::type::small));
+    g.setFont (theme::font (theme::type::smallSize));
     textcache::drawText (g, tr ("or drop an audio file here"), gridLeft() + 4, addY + positionStripHeight, 400, rowHeight - positionStripHeight,
                          juce::Justification::centredLeft);
 
@@ -998,7 +998,7 @@ void ChannelRackComponent::paint (juce::Graphics& g)
             g.setColour (addHovered ? textSecondary : borderStrong);
             g.fillPath (dashed);
             g.setColour (addHovered ? textPrimary : textSecondary);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             textcache::drawText (g, tr ("+ add channel"), addArea.toNearestInt(), juce::Justification::centred);
         }
 

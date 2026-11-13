@@ -172,7 +172,7 @@ public:
                                                                         curve.getBottom() - 4.0f - (curve.getHeight() - 8.0f) * now }));
 
         // readouts
-        g.setFont (monoFont (type::small));
+        g.setFont (monoFont (type::smallSize));
         auto line = readoutArea();
         for (int a = 0; a < axes; ++a)
         {

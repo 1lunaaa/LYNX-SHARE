@@ -624,7 +624,7 @@ public:
         g.setColour (theme::colour::textPrimary);
         g.setFont (theme::font (theme::type::title));
         g.drawText (tr ("LYNX Dance"), header, juce::Justification::centredLeft);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.setColour (theme::colour::textSecondary);
         g.drawFittedText (tr ("Fruity Dance's role with LYNX SHARE's own dancer: it makes no sound. Its notes pick the move; drag the dancer to "
                               "place it, right-click it for its moves."),

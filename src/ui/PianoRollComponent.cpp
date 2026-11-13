@@ -1081,7 +1081,7 @@ void PianoRollComponent::paint (juce::Graphics& g)
             else
             {
                 g.setColour (textDisabled);
-                g.setFont (theme::font (theme::type::small));
+                g.setFont (theme::font (theme::type::smallSize));
                 textcache::drawText (g, tr ("No events yet: draw them here"), lane.reduced (8, 4), juce::Justification::centredLeft, true);
             }
         }

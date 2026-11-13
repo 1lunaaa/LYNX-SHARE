@@ -1135,7 +1135,7 @@ public:
                          theme::colour::textPrimary);
                     break;
                 case K::text: add (t + "\n", theme::font (theme::type::body), theme::colour::textSecondary); break;
-                case K::blank: add ("\n", theme::font (theme::type::small), theme::colour::textSecondary); break;
+                case K::blank: add ("\n", theme::font (theme::type::smallSize), theme::colour::textSecondary); break;
             }
         }
     }

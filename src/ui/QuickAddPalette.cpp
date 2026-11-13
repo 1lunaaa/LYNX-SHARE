@@ -120,7 +120,7 @@ public:
 
         for (auto* l : { &instrumentsTitle, &effectsTitle })
         {
-            l->setFont (theme::font (theme::type::small, true));
+            l->setFont (theme::font (theme::type::smallSize, true));
             l->setColour (juce::Label::textColourId, theme::colour::textSecondary);
             addAndMakeVisible (*l);
         }

@@ -135,7 +135,7 @@ public:
             addAndMakeVisible (b);
         stopButton.setVisible (false);
 
-        status.setFont (theme::font (theme::type::small));
+        status.setFont (theme::font (theme::type::smallSize));
         status.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (status);
 
@@ -391,11 +391,11 @@ private:
         g.setColour (dot);
         g.fillEllipse (14.0f, 12.0f, 8.0f, 8.0f);
 
-        const auto rightWidth = juce::jmin (width / 3, juce::GlyphArrangement::getStringWidthInt (juce::Font (theme::font (theme::type::small)), right) + 8);
+        const auto rightWidth = juce::jmin (width / 3, juce::GlyphArrangement::getStringWidthInt (juce::Font (theme::font (theme::type::smallSize)), right) + 8);
         g.setFont (theme::font (theme::type::body, true));
         g.setColour (theme::colour::textPrimary);
         g.drawText (name, 32, 5, width - 44 - rightWidth, 18, juce::Justification::centredLeft, true);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.setColour (theme::colour::textSecondary);
         g.drawText (right, width - 12 - rightWidth, 5, rightWidth, 18, juce::Justification::centredRight, true);
         g.setColour (detailColour);

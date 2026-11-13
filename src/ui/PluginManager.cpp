@@ -90,7 +90,7 @@ public:
         }
         filterButtons[0].setToggleState (true, juce::dontSendNotification);
 
-        count.setFont (theme::font (theme::type::small));
+        count.setFont (theme::font (theme::type::smallSize));
         count.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         count.setJustificationType (juce::Justification::centredRight);
         addAndMakeVisible (count);
@@ -134,7 +134,7 @@ public:
         progress.setColour (juce::ProgressBar::foregroundColourId, theme::colour::accent);
         progress.setPercentageDisplay (false);
         addChildComponent (progress);
-        scanStatus.setFont (theme::font (theme::type::small));
+        scanStatus.setFont (theme::font (theme::type::smallSize));
         scanStatus.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         scanStatus.setJustificationType (juce::Justification::centredLeft);
         addAndMakeVisible (scanStatus);
@@ -327,7 +327,7 @@ private:
                 break;
             }
             case fileColumn:
-                g.setFont (theme::font (theme::type::small));
+                g.setFont (theme::font (theme::type::smallSize));
                 text (u8 (r->file), theme::colour::textDisabled);
                 break;
             default: break;

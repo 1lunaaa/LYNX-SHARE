@@ -309,7 +309,7 @@ public:
     {
         skin::button (g, getLocalBounds().toFloat().reduced (1.0f), getToggleState(), over || down, accent);
         g.setColour (getToggleState() ? theme::colour::textPrimary : theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small, getToggleState()));
+        g.setFont (theme::font (theme::type::smallSize, getToggleState()));
         g.drawFittedText (getButtonText(), getLocalBounds().reduced (4, 0), juce::Justification::centred, 1);
     }
     juce::Colour accent;
@@ -374,13 +374,13 @@ public:
         if (frozen())
         {
             g.setColour (theme::colour::warning);
-            g.setFont (theme::font (theme::type::small, true));
+            g.setFont (theme::font (theme::type::smallSize, true));
             g.drawText (tr ("HOLD"), area.reduced (8.0f).removeFromTop (16.0f), juce::Justification::topRight);
         }
         if (! hoverText.isEmpty())
         {
-            g.setFont (theme::font (theme::type::small));
-            const auto w = (float) juce::GlyphArrangement::getStringWidthInt (theme::font (theme::type::small), hoverText) + 14.0f;
+            g.setFont (theme::font (theme::type::smallSize));
+            const auto w = (float) juce::GlyphArrangement::getStringWidthInt (theme::font (theme::type::smallSize), hoverText) + 14.0f;
             auto box = juce::Rectangle<float> (w, 20.0f).withPosition (hover.toFloat() + juce::Point<float> (12.0f, -26.0f));
             box = box.constrainedWithin (area.reduced (2.0f));
             g.setColour (juce::Colour (0xe0101218));
@@ -796,7 +796,7 @@ private:
         }
         // the read-out: the mode and the highest value (LUFS: the momentary loudness)
         g.setColour (theme::colour::textPrimary);
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         const auto value = mode == analysis::MeterMode::lufs ? meter.loudness() : meter.maxDb();
         g.drawText (juce::String (wc::meterModeName (mode)) + "  " + (value <= -139.0f ? juce::String ("-inf") : juce::String (value, 1)),
                     area.reduced (8.0f).removeFromTop (16.0f), juce::Justification::topLeft);
@@ -2391,7 +2391,7 @@ public:
         for (auto* b : { &locate, &exportButton, &cancel })
             addAndMakeVisible (*b);
         addAndMakeVisible (status);
-        status.setFont (theme::font (theme::type::small));
+        status.setFont (theme::font (theme::type::smallSize));
         status.setJustificationType (juce::Justification::topLeft);
         locate.setButtonText (tr ("Locate ffmpeg..."));
         locate.onClick = [this] { chooseFfmpeg(); };
@@ -2541,7 +2541,7 @@ public:
             g.setColour (argb (l.colourB));
             g.fillRect (swatch);
             g.setColour (l.enabled ? theme::colour::textPrimary : theme::colour::textDisabled);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             auto label = tr (scene::typeName (l.type));
             if (scene::isShaderType (l.type)) // (round 165e: the effect's name, its kind in brackets)
                 label = tr (scene::effectName (l.type, l.effect)) + " (" + tr (scene::typeName (l.type)).upToFirstOccurrenceOf (" (", false, false) + ")";
@@ -2760,7 +2760,7 @@ public:
         g.setColour (skin::captionColour());
         g.drawText (tr ("LAYERS"), layersTitle, juce::Justification::centredLeft);
         g.drawText (tr ("SELECTED LAYER"), propsTitle, juce::Justification::centredLeft);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         for (const auto& s : sliders)
             if (s.slider->isVisible())
                 g.drawText (s.name, s.slider->getBounds().withX (propsX).withWidth (70), juce::Justification::centredLeft);

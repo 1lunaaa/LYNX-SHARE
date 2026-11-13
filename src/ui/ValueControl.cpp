@@ -356,7 +356,7 @@ public:
             top->addChildComponent (this);
 
         text = newText;
-        const auto f = juce::Font (theme::font (theme::type::small, true));
+        const auto f = juce::Font (theme::font (theme::type::smallSize, true));
         const auto width = juce::GlyphArrangement::getStringWidthInt (f, text) + 22;
         const auto r = top->getLocalArea (&over, control);
         auto b = juce::Rectangle<int> (width, 23).withCentre ({ r.getCentreX(), r.getY() - 14 });
@@ -396,7 +396,7 @@ public:
         g.setColour (juce::Colours::white.withAlpha (0.10f));
         g.drawHorizontalLine ((int) r.getY() + 1, r.getX() + corner, r.getRight() - corner);
         g.setColour (colour::textPrimary);
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.drawText (text, getLocalBounds(), juce::Justification::centred, false);
     }
 

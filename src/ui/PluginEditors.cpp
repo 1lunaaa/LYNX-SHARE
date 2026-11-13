@@ -262,7 +262,7 @@ public:
             if (const auto* fx = current())
                 text = pluginheader::modeLine (kind, fx->params, engine.getSong().bpm);
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawFittedText (text, area.reduced (10.0f, 0.0f).toNearestInt(), juce::Justification::centredLeft, 1, 0.85f);
     }
 
@@ -691,7 +691,7 @@ public:
                 text.setRight (sidechainChip.getX() - 4.0f);
                 paintSidechainChip (g, fx);
             }
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.setColour (colour::textSecondary);
         // where it is: only when it fits whole (round 170k2: no "(I…" stub beside the name)
         if (const auto where = "(" + trackName() + ")"; ! plugui::hostedElsewhere && juce::GlyphArrangement::getStringWidth (g.getCurrentFont(), where) <= text.getWidth() - 9.0f)
@@ -713,7 +713,7 @@ public:
         }
         g.setColour (presetName.isNotEmpty() ? colour::textPrimary : colour::textSecondary);
         ui::drawFittingText (g, presetName.isNotEmpty() ? presetName : tr ("(no preset)"), box.reduced (8.0f, 0.0f), juce::Justification::centredRight,
-                             font (type::small, presetName.isNotEmpty()), 8.0f, 0.0f, 0.75f);
+                             font (type::smallSize, presetName.isNotEmpty()), 8.0f, 0.0f, 0.75f);
         drawArrow (g, prevButton(), juce::MathConstants<float>::pi, hoverHeader == 3 ? accent : colour::textSecondary);
         drawArrow (g, nextButton(), 0.0f, hoverHeader == 4 ? accent : colour::textSecondary);
     }
@@ -735,7 +735,7 @@ public:
         const auto text = (modulator ? tr ("Modulator") : tr ("SC")) + ": " + (source.isNotEmpty() ? source : tr ("None"));
         g.setColour (source.isNotEmpty() ? colour::textPrimary : colour::textSecondary);
         ui::drawFittingText (g, text, box.reduced (7.0f, 0.0f).withTrimmedRight (9.0f), juce::Justification::centredLeft,
-                             font (type::small, source.isNotEmpty()), 8.0f, 0.0f, 0.75f);
+                             font (type::smallSize, source.isNotEmpty()), 8.0f, 0.0f, 0.75f);
         drawArrow (g, { box.getRight() - 14.0f, box.getY(), 10.0f, box.getHeight() }, juce::MathConstants<float>::halfPi,
                    hoverHeader == 6 ? accent : colour::textSecondary);
     }

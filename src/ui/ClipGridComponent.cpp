@@ -123,7 +123,7 @@ public:
         g.setColour (c::border);
         g.fillRect (sceneColumn.getX(), 0, 1, sceneColumn.getHeight());
         g.setColour (c::textSecondary);
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         g.drawText (tr ("Scenes"), sceneColumn.withHeight (headerHeight).withTrimmedLeft (8), juce::Justification::centredLeft);
         {
             juce::Graphics::ScopedSaveState rows (g);
@@ -339,7 +339,7 @@ private:
         g.setColour (c::border);
         g.fillRect (r.getRight() - 1, r.getY(), 1, r.getHeight());
         g.setColour (c::textPrimary);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         const auto name = info != nullptr && ! info->name.empty() ? utf8 (info->name) : tr ("Track {0}", { juce::String (t + 1) });
         g.drawText (name, r.reduced (6, 0).withTrimmedRight (taken ? 18 : 0), juce::Justification::centredLeft, true);
         if (taken)
@@ -401,7 +401,7 @@ private:
                 g.strokePath (triangle, juce::PathStrokeType (1.0f));
             }
             g.setColour (ink);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawText (clipName (song, grid, *clip), cell.withTrimmedLeft (launchZone).withTrimmedRight (3), juce::Justification::centredLeft, true);
         }
         if (t == selectedTrack && row == selectedScene)
@@ -424,7 +424,7 @@ private:
         triangle.addTriangle (a.getX(), a.getY(), a.getRight(), a.getCentreY(), a.getX(), a.getBottom());
         g.setColour (c::textPrimary);
         g.fillPath (triangle);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.drawText (! scene.name.empty() ? utf8 (scene.name) : juce::String (row + 1), cell.withTrimmedLeft (launchZone), juce::Justification::centredLeft, true);
     }
 

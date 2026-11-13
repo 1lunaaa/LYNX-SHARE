@@ -157,7 +157,7 @@ public:
         help.setJustificationType (juce::Justification::topLeft);
         addAndMakeVisible (help);
 
-        status.setFont (theme::font (theme::type::small, true));
+        status.setFont (theme::font (theme::type::smallSize, true));
         addAndMakeVisible (status);
         addAndMakeVisible (monitor);
 
@@ -960,7 +960,7 @@ public:
         // the top of the range means every key (FL saves 256)
         highKey.onValueChange = [this] { const auto v = highKey.getValue(); edit ([v] (ControllerArticulator& a) { a.highKey = v >= 127.0 ? 256 : (int) v; }); };
         keysLabel.setText (tr ("Keys"), juce::dontSendNotification);
-        keysLabel.setFont (theme::font (theme::type::small));
+        keysLabel.setFont (theme::font (theme::type::smallSize));
         addAndMakeVisible (keysLabel);
         for (auto* l : { &links, &partInfo })
         {

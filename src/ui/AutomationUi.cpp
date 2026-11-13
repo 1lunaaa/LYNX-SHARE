@@ -186,7 +186,7 @@ public:
         {
             const auto p = pointPosition (points[(std::size_t) hoverPoint]);
             g.setColour (colour::textPrimary);
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             const auto value = points[(std::size_t) hoverPoint].value;
             g.drawText (a->target.kind == AutomationTargetKind::tempo ? juce::String (tempoFromValue (value), 1) + " BPM"
                                                                        : juce::String (juce::roundToInt (value * 100.0f)) + "%",

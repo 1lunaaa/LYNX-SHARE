@@ -845,7 +845,7 @@ void LookAndFeel::getIdealPopupMenuItemSize (const juce::String& text, bool isSe
     {
         // JUCE asks with -1 for a section header and then adds half of the answer: hand back 2/3 of the wanted height
         idealHeight = (menus::headerHeight() * 2 + 2) / 3;
-        idealWidth = juce::roundToInt (juce::GlyphArrangement::getStringWidth (uiFont (type::small, true), caps (text)) * 0.8f) + 24;
+        idealWidth = juce::roundToInt (juce::GlyphArrangement::getStringWidth (uiFont (type::smallSize, true), caps (text)) * 0.8f) + 24;
         return;
     }
     idealHeight = standardMenuItemHeight > 0 ? standardMenuItemHeight : menus::itemHeight();
@@ -901,8 +901,8 @@ void LookAndFeel::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<in
     if (shortcutKeyText.isNotEmpty())
     {
         g.setColour (textSecondary.withMultipliedAlpha (isActive ? 1.0f : 0.6f));
-        g.setFont (uiFont (type::small));
-        g.drawText (shortcutKeyText, content.removeFromRight (juce::roundToInt (juce::GlyphArrangement::getStringWidth (uiFont (type::small), shortcutKeyText)) + 4),
+        g.setFont (uiFont (type::smallSize));
+        g.drawText (shortcutKeyText, content.removeFromRight (juce::roundToInt (juce::GlyphArrangement::getStringWidth (uiFont (type::smallSize), shortcutKeyText)) + 4),
                     juce::Justification::centredRight, false);
         g.setFont (font);
     }
@@ -926,7 +926,7 @@ void LookAndFeel::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<in
 
 void LookAndFeel::drawPopupMenuSectionHeader (juce::Graphics& g, const juce::Rectangle<int>& area, const juce::String& sectionName)
 {
-    g.setFont (uiFont (type::small, true));
+    g.setFont (uiFont (type::smallSize, true));
     g.setColour (textSecondary);
     g.drawFittedText (caps (sectionName), area.reduced (14, 0).withTrimmedTop (menus::compact() ? 2 : 4), juce::Justification::centredLeft, 1);
 }
@@ -1054,7 +1054,7 @@ void LookAndFeel::drawLinearSlider (juce::Graphics& g, int x, int y, int width, 
 juce::Label* LookAndFeel::createSliderTextBox (juce::Slider& slider)
 {
     auto* label = juce::LookAndFeel_V4::createSliderTextBox (slider);
-    label->setFont (uiFont (type::small));
+    label->setFont (uiFont (type::smallSize));
     label->setColour (juce::Label::outlineColourId, juce::Colours::transparentBlack);
     label->setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
     label->setColour (juce::TextEditor::focusedOutlineColourId, accent);
@@ -1202,7 +1202,7 @@ juce::Rectangle<int> LookAndFeel::getTooltipBounds (const juce::String& tipText,
 {
     juce::TextLayout layout;
     juce::AttributedString s;
-    s.append (tipText, uiFont (type::small), textPrimary);
+    s.append (tipText, uiFont (type::smallSize), textPrimary);
     layout.createLayoutWithBalancedLineLengths (s, 360.0f);
     const auto w = (int) (layout.getWidth() + 18.0f), h = (int) (layout.getHeight() + 12.0f);
     return juce::Rectangle<int> (screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
@@ -1219,7 +1219,7 @@ void LookAndFeel::drawTooltip (juce::Graphics& g, const juce::String& text, int 
 
     juce::AttributedString s;
     s.setJustification (juce::Justification::centredLeft);
-    s.append (text, uiFont (type::small), textPrimary);
+    s.append (text, uiFont (type::smallSize), textPrimary);
     juce::TextLayout layout;
     layout.createLayoutWithBalancedLineLengths (s, 360.0f);
     layout.draw (g, bounds.reduced (9.0f, 6.0f));
@@ -1325,7 +1325,7 @@ void LookAndFeel::drawProgressBar (juce::Graphics& g, juce::ProgressBar& bar, in
     if (textToShow.isNotEmpty())
     {
         g.setColour (textPrimary);
-        g.setFont (uiFont (type::small));
+        g.setFont (uiFont (type::smallSize));
         g.drawText (textToShow, r, juce::Justification::centred, false);
     }
 }
@@ -1338,7 +1338,7 @@ void LookAndFeel::drawGroupComponentOutline (juce::Graphics& g, int w, int h, co
 
     if (text.isNotEmpty())
     {
-        const auto font = uiFont (type::small, true);
+        const auto font = uiFont (type::smallSize, true);
         const auto tw = juce::GlyphArrangement::getStringWidth (font, text) + 10.0f;
         g.setColour (bg2);
         g.fillRect (12.0f, 0.0f, tw, 16.0f);

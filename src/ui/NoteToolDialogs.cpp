@@ -171,7 +171,7 @@ public:
         title.setText (tr (noteToolTitle (tool)), juce::dontSendNotification);
         title.setFont (theme::font (theme::type::title, true));
         addAndMakeVisible (title);
-        info.setFont (theme::font (theme::type::small));
+        info.setFont (theme::font (theme::type::smallSize));
         info.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (info);
         updateInfo();
@@ -265,7 +265,7 @@ private:
     std::size_t add (Control c)
     {
         auto label = std::make_unique<juce::Label> (juce::String(), c.name);
-        label->setFont (c.kind == Control::header ? theme::font (theme::type::small, true) : theme::font (theme::type::body));
+        label->setFont (c.kind == Control::header ? theme::font (theme::type::smallSize, true) : theme::font (theme::type::body));
         if (c.kind == Control::header)
             label->setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (*label);

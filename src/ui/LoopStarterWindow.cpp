@@ -258,7 +258,7 @@ public:
             addAndMakeVisible (b);
         }
 
-        info.setFont (theme::font (theme::type::small));
+        info.setFont (theme::font (theme::type::smallSize));
         info.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         info.setJustificationType (juce::Justification::centredLeft);
         addAndMakeVisible (info);
@@ -281,11 +281,11 @@ public:
     {
         g.fillAll (theme::colour::bg2);
         g.setColour (theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         g.drawText (tr ("Genre"), getLocalBounds().reduced (10).removeFromTop (24).removeFromLeft (60), juce::Justification::centredLeft);
         if (rows.empty())
         {
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawFittedText (tr ("Pick a genre and click New loop. The kit's samples come from the sample packs installed on this "
                                   "computer (FL Studio's packs when FL is installed, else LYNX's built-in drums); FL Studio's "
                                   "audio loops from FL Cloud are not used."),

@@ -570,7 +570,7 @@ void MixerStrips::paintFoldTab (juce::Graphics& g, int t)
     juce::Graphics::ScopedSaveState state (g);
     g.addTransform (juce::AffineTransform::rotation (-juce::MathConstants<float>::halfPi, (float) column.getCentreX(), (float) column.getCentreY()));
     g.setColour (colour::textPrimary.withAlpha (0.9f));
-    g.setFont (font (type::small, false));
+    g.setFont (font (type::smallSize, false));
     textcache::drawFittedText (g, name, juce::Rectangle<int> (column.getHeight(), column.getWidth()).withCentre (column.getCentre()),
                                juce::Justification::centredLeft, 1, 0.8f);
 }
@@ -918,7 +918,7 @@ void MixerStrips::paintVcaStrip (juce::Graphics& g, int i)
 
     const auto name = juce::String::fromUTF8 (vca.name.c_str());
     g.setColour (vca.muted ? colour::textDisabled : colour::textPrimary.withAlpha (0.9f));
-    g.setFont (font (compactLayout ? 10.0f : type::small));
+    g.setFont (font (compactLayout ? 10.0f : type::smallSize));
     if (const auto box = nameArea (v); ! sp.verticalName)
         textcache::drawFittedText (g, name, box, juce::Justification::centred, 1, 0.7f);
     else
@@ -1414,7 +1414,7 @@ void MixerStrips::paint (juce::Graphics& g)
         if (needs (nameArea (t).withX (x).withWidth (plateWidth)))
         {
         g.setColour (track.muted ? colour::textDisabled : (hovered (Part::header) ? colour::textPrimary : colour::textPrimary.withAlpha (0.9f)));
-        g.setFont (font (compactLayout ? 10.0f : type::small, isSelected));
+        g.setFont (font (compactLayout ? 10.0f : type::smallSize, isSelected));
         // Online Sessions (round 168a): a plugin of this insert is not installed here, its stand-in render plays (an
         // amber R before the name)
         const auto standIn = engine.insertPlaysStandIn (t);
@@ -4114,7 +4114,7 @@ void EffectsPanel::paintEq (juce::Graphics& g)
                 g.addTransform (juce::AffineTransform::rotation (-juce::MathConstants<float>::halfPi, chevron.getCentreX(), chevron.getCentreY()));
             icons::draw (g, Icon::chevronDown, chevron, colour::textSecondary);
         }
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.setColour (colour::textSecondary);
         textcache::drawText (g, tr ("EQ"), bar.withTrimmedLeft (18.0f).toNearestInt(), juce::Justification::centredLeft);
         if (eq.bypassed && eq.hasBoostOrCut()) // round 177d: bypassed, its settings kept
@@ -4971,7 +4971,7 @@ void EffectsPanel::paint (juce::Graphics& g)
         g.setColour (colour::textPrimary);
         g.setFont (font (type::title, true));
         textcache::drawText (g, juce::String::fromUTF8 (effectInfo (slot.kind).name), 10, y, getWidth() - 20, 20, juce::Justification::centredLeft);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         for (std::size_t b = 0; b < slot.branches.size(); ++b)
         {
             y += 22;
@@ -5016,7 +5016,7 @@ void EffectsPanel::paint (juce::Graphics& g)
         theme::fillRoundRect (g, b, radius::md, b.contains (hover) ? colour::bg5 : colour::bg4);
         icons::draw (g, Icon::plugin, b.withWidth (22.0f).withSizeKeepingCentre (13.0f, 13.0f).translated (4.0f, 0.0f), colour::textSecondary);
         g.setColour (colour::textPrimary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         textcache::drawFittedText (g, tr ("Editor"), b.withTrimmedLeft (24.0f).toNearestInt(), juce::Justification::centredLeft, 1, 0.8f);
     }
     paintSidechainButton (g, slot);
@@ -6028,7 +6028,7 @@ void EffectsPanel::paintSidechainButton (juce::Graphics& g, const EffectSlot& sl
     const auto modulator = slot.kind == EffectKind::vocoder || slot.kind == EffectKind::vocodex;
     const auto text = (modulator ? tr ("Modulator") : tr ("SC")) + ": " + (source.isNotEmpty() ? source : tr ("None"));
     g.setColour (source.isNotEmpty() ? colour::textPrimary : colour::textSecondary);
-    g.setFont (font (type::small));
+    g.setFont (font (type::smallSize));
     textcache::drawFittedText (g, text, b.withTrimmedLeft (24.0f).withTrimmedRight (14.0f).toNearestInt(), juce::Justification::centredLeft, 1, 0.8f);
     juce::Path tri; // ▾: it opens a list
     const auto a = juce::Point<float> (b.getRight() - 9.0f, b.getCentreY());
@@ -6690,7 +6690,7 @@ void MixerLayoutBox::paint (juce::Graphics& g)
     // round 170e: the strips icon names what the box is (it showed only "Wide")
     icons::draw (g, Icon::mixer, box.withWidth (24.0f).withSizeKeepingCentre (14.0f, 14.0f), hot ? colour::textPrimary : colour::textSecondary);
     g.setColour (colour::accent);
-    g.setFont (font (type::small, true));
+    g.setFont (font (type::smallSize, true));
     g.drawFittedText (tr (juce::String (std::string (mixerlayout::nameOf (MixerStrips::layout)))), getLocalBounds().reduced (8, 0).withTrimmedLeft (18).withTrimmedRight (14),
                       juce::Justification::centredLeft, 1, 0.8f);
     icons::draw (g, Icon::chevronDown, box.removeFromRight (18.0f).withSizeKeepingCentre (12.0f, 12.0f), hot ? colour::textPrimary : colour::textSecondary);

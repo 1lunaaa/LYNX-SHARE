@@ -78,11 +78,16 @@ inline juce::Colour audioClip { 0xff5a87b8 };
 void setPalette (const themes::Palette& palette); // the tokens only (ThemeSettings also refreshes the windows)
 themes::Palette currentPalette();
 
+// windows.h (rpcndr.h) defines `small` as a macro (#define small char), which breaks type::smallSize below
+#ifdef small
+ #undef small
+#endif
+
 // --- typography ----------------------------------------------------------------------------------
 namespace type
 {
 inline constexpr float caption = 11.0f;  // grid numbers, small captions
-inline constexpr float small = 12.0f;    // secondary labels, status bar, tooltips
+inline constexpr float smallSize = 12.0f;    // secondary labels, status bar, tooltips
 inline constexpr float body = 13.0f;     // default control text
 inline constexpr float title = 15.0f;    // panel titles
 inline constexpr float display = 20.0f;  // the transport position

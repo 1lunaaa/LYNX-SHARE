@@ -840,7 +840,7 @@ void MainComponent::paint (juce::Graphics& g)
         // the people of a live session first (round 169b), the project's name after them
         const auto people = live != nullptr ? liveui::paintPresence (g, titleArea, *live) : 0;
         const auto name = projectName.isNotEmpty() ? projectName : tr ("Untitled");
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.setColour (colour::textSecondary);
         if (const auto rest = titleArea.withTrimmedLeft (people > 0 ? people + 10 : 0); rest.getWidth() >= 50)
             g.drawFittedText ((engine.isModified() ? juce::String ("* ") : juce::String()) + name, rest, juce::Justification::centredRight, 1, 0.8f);
@@ -3483,7 +3483,7 @@ void MainComponent::PatternLengthBox::paint (juce::Graphics& g)
     // round 170e: a length icon instead of the letters "A" / "L" (unreadable); dim = automatic (from the notes)
     icons::draw (g, Icon::span, r.removeFromLeft (13).toFloat().withSizeKeepingCentre (13.0f, 13.0f),
                  automatic ? colour::textDisabled : colour::textSecondary);
-    g.setFont (font (type::small, true));
+    g.setFont (font (type::smallSize, true));
     g.setColour (automatic ? colour::textSecondary : colour::textPrimary);
     g.drawText (juce::String (bars), r, juce::Justification::centred, false);
 }
@@ -3587,7 +3587,7 @@ void MainComponent::PatternSelector::paint (juce::Graphics& g)
     arrow (2, false);
 
     g.setColour (colour::textPrimary);
-    g.setFont (font (type::small, true));
+    g.setFont (font (type::smallSize, true));
     const auto name = getLocalBounds().withTrimmedLeft (arrowWidth + 7).withTrimmedRight (arrowWidth + 14);
     g.drawText (text, name, juce::Justification::centredLeft, true);
     icons::draw (g, Icon::chevronDown, juce::Rectangle<float> ((float) (getWidth() - arrowWidth - 14), 0.0f, 12.0f, (float) getHeight()).reduced (1.0f, 4.0f),
@@ -6788,7 +6788,7 @@ std::unique_ptr<juce::Component> MainComponent::makeHelpContent (const keys::Key
                 for (const auto& row : section.rows)
                 {
                     const auto keys = tr (row.keys);
-                    g.setFont (font (type::small, true));
+                    g.setFont (font (type::smallSize, true));
                     const auto keyWidth = juce::roundToInt (juce::GlyphArrangement::getStringWidth (g.getCurrentFont(), keys)) + 14;
                     g.setColour (colour::bg4);
                     g.fillRoundedRectangle ((float) x, (float) y + 1.0f, (float) keyWidth, 18.0f, radius::sm);
@@ -6812,13 +6812,13 @@ std::unique_ptr<juce::Component> MainComponent::makeHelpContent (const keys::Key
             g.setFont (font (type::title, true));
             g.drawText (tr ("Function keys"), x + 10, y, columnWidth - 10, 20, juce::Justification::centredLeft);
             y += 28;
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             int keyWidth = 0;
             for (const auto& [keys, text] : fkeys)
                 keyWidth = juce::jmax (keyWidth, juce::roundToInt (juce::GlyphArrangement::getStringWidth (g.getCurrentFont(), keys)) + 14);
             for (const auto& [keys, text] : fkeys)
             {
-                g.setFont (font (type::small, true));
+                g.setFont (font (type::smallSize, true));
                 g.setColour (colour::bg4);
                 g.fillRoundedRectangle ((float) x, (float) y + 1.0f, (float) keyWidth, 18.0f, radius::sm);
                 g.setColour (colour::textPrimary);
@@ -6964,7 +6964,7 @@ void MainComponent::FilterBox::paint (juce::Graphics& g)
     // round 170e2: a funnel names the box (it showed only "All")
     icons::draw (g, Icon::filter, area.withWidth (22.0f).withSizeKeepingCentre (13.0f, 13.0f), colour::textSecondary);
     g.setColour (colour::textPrimary);
-    g.setFont (font (type::small));
+    g.setFont (font (type::smallSize));
     g.drawText (text, getLocalBounds().withTrimmedLeft (22).withTrimmedRight (16), juce::Justification::centredLeft, true);
     icons::draw (g, Icon::chevronDown, area.removeFromRight (16.0f).reduced (3.0f).translated (-2.0f, 0.0f), colour::textSecondary);
 }

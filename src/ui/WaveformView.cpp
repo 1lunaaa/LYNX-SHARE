@@ -538,7 +538,7 @@ void WaveformDisplay::paint (juce::Graphics& g)
 
     auto& cache = *WaveformCache::getInstance();
     const auto summary = cache.find (path, source);
-    g.setFont (font (type::small));
+    g.setFont (font (type::smallSize));
 
     if (summary == nullptr)
     {

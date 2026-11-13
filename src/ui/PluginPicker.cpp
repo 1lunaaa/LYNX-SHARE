@@ -95,7 +95,7 @@ public:
         addButton.onClick = [this] { choose (list.getSelectedRow()); };
         for (auto* b : { &manageButton, &scanButton, &addButton })
             addAndMakeVisible (*b);
-        countLabel.setFont (theme::font (theme::type::small));
+        countLabel.setFont (theme::font (theme::type::smallSize));
         countLabel.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (countLabel);
 
@@ -212,7 +212,7 @@ public:
             for (int i = 0; i < columnCount; ++i)
             {
                 g.setColour (i == 0 ? theme::colour::textPrimary : theme::colour::textSecondary);
-                g.setFont (theme::font (i == 0 ? theme::type::body : theme::type::small));
+                g.setFont (theme::font (i == 0 ? theme::type::body : theme::type::smallSize));
                 textcache::drawText (g, cells[i], column (i, width, height), juce::Justification::centredLeft, true);
             }
         }

@@ -178,7 +178,7 @@ void CurveEditor::paint (juce::Graphics& g)
     }
 
     g.setColour (theme::colour::textSecondary);
-    g.setFont (theme::font (theme::type::small));
+    g.setFont (theme::font (theme::type::smallSize));
     if (caption.isNotEmpty())
         g.drawText (caption, a.reduced (6.0f, 4.0f), juce::Justification::topLeft);
     if (readout.isNotEmpty())
@@ -347,7 +347,7 @@ public:
         title.setText (tr (toolTitle (tool)), juce::dontSendNotification);
         title.setFont (theme::font (theme::type::title, true));
         addAndMakeVisible (title);
-        info.setFont (theme::font (theme::type::small));
+        info.setFont (theme::font (theme::type::smallSize));
         info.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         info.setJustificationType (juce::Justification::topLeft);
         addAndMakeVisible (info);
@@ -532,7 +532,7 @@ private:
     std::size_t add (Control c)
     {
         auto label = std::make_unique<juce::Label> (juce::String(), c.name);
-        label->setFont (c.kind == Control::header ? theme::font (theme::type::small, true) : theme::font (theme::type::body));
+        label->setFont (c.kind == Control::header ? theme::font (theme::type::smallSize, true) : theme::font (theme::type::body));
         label->setColour (juce::Label::textColourId, c.kind == Control::header ? theme::colour::textSecondary : theme::colour::textPrimary);
         if (c.kind == Control::knob)
             label->setJustificationType (juce::Justification::centred);

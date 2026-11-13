@@ -618,7 +618,7 @@ protected:
         g.setColour (colour::bg0.withAlpha (0.6f));
         g.fillRect (area);
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawFittedText (helpText (fx), area.reduced (10.0f, 0.0f).toNearestInt(), juce::Justification::centredLeft, 1, 0.85f);
     }
 
@@ -632,7 +632,7 @@ protected:
         const auto name = title();
         const auto w = skin::titleText (g, juce::Rectangle<float> (46.0f, 0.0f, 300.0f, h.getHeight()), name, accent);
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawText (trackName() + "  -  " + tr ("slot {0}", { juce::String (slot + 1) }), juce::Rectangle<float> (58.0f + w, 0.0f, 220.0f, h.getHeight()),
                     juce::Justification::centredLeft, true);
         const auto left = bar.place (h.withTrimmedLeft (w + 270.0f));
@@ -690,7 +690,7 @@ protected:
                     const auto capR = juce::Rectangle<float> (c.r.getX() - 14.0f, knobR.getBottom() + 3.0f, c.r.getWidth() + 28.0f, 14.0f);
                     const auto captionColour = active ? ac.brighter (0.3f) : skin::captionColour().interpolatedWith (colour::textPrimary, hot * 0.5f);
                     g.setColour (captionColour);
-                    g.setFont (font (c.size == 2 ? type::small : type::caption, true));
+                    g.setFont (font (c.size == 2 ? type::smallSize : type::caption, true));
                     if (c.autoParam >= 0) // "AUTO" (dim / lit) then the caption, centred together
                     {
                         const auto prefix = autoPrefixRect (c, capR);
@@ -709,20 +709,20 @@ protected:
                     if (c.showValue && (hover || active))
                     {
                         g.setColour (active ? ac.brighter (0.3f) : skin::valueColour (true));
-                        g.setFont (font (c.size == 2 ? type::body : type::small, c.size == 2));
+                        g.setFont (font (c.size == 2 ? type::body : type::smallSize, c.size == 2));
                         g.drawText (text (c.param), juce::Rectangle<float> (c.r.getX() - 24.0f, knobR.getBottom() + 17.0f, c.r.getWidth() + 48.0f, 14.0f),
                                     juce::Justification::centred, false);
                     }
                     break;
                 }
                 g.setColour (active ? ac.brighter (0.3f) : skin::captionColour().interpolatedWith (colour::textPrimary, hot * 0.5f));
-                g.setFont (font (c.size == 2 ? type::small : type::caption, true));
+                g.setFont (font (c.size == 2 ? type::smallSize : type::caption, true));
                 g.drawText (caps (c.caption), juce::Rectangle<float> (c.r.getX() - 14.0f, knobR.getBottom() + 3.0f, c.r.getWidth() + 28.0f, 14.0f),
                             juce::Justification::centred, false);
                 if (c.showValue)
                 {
                     g.setColour (skin::valueColour (active || hover));
-                    g.setFont (font (c.size == 2 ? type::body : type::small, c.size == 2));
+                    g.setFont (font (c.size == 2 ? type::body : type::smallSize, c.size == 2));
                     g.drawText (text (c.param), juce::Rectangle<float> (c.r.getX() - 14.0f, knobR.getBottom() + 17.0f, c.r.getWidth() + 28.0f, 14.0f),
                                 juce::Justification::centred, false);
                 }
@@ -762,7 +762,7 @@ protected:
                     g.drawRoundedRectangle (c.r.reduced (0.5f), radius::md, 1.0f);
                 }
                 g.setColour (lit ? colour::textPrimary : colour::textSecondary);
-                g.setFont (font (type::small, lit));
+                g.setFont (font (type::smallSize, lit));
                 g.drawText (c.caption, c.r.withTrimmedLeft (20.0f).withTrimmedRight (4.0f), juce::Justification::centred, true);
                 break;
             }
@@ -772,7 +772,7 @@ protected:
                     break;
                 skin::button (g, c.r, c.lit, hover, ac);
                 g.setColour (c.lit || hover ? colour::textPrimary : colour::textSecondary);
-                g.setFont (font (type::small, c.lit));
+                g.setFont (font (type::smallSize, c.lit));
                 g.drawText (c.caption, c.r.reduced (4.0f, 0.0f), juce::Justification::centred, true);
                 break;
             }
@@ -782,7 +782,7 @@ protected:
                 {
                     skin::button (g, c.r, false, hover, ac);
                     g.setColour (colour::textPrimary);
-                    g.setFont (font (c.r.getHeight() < 20.0f ? type::small : type::body, false));
+                    g.setFont (font (c.r.getHeight() < 20.0f ? type::smallSize : type::body, false));
                     g.drawText (tr (c.options[optionIndex (c)]), c.r.reduced (6.0f, 0.0f), juce::Justification::centred, true);
                     if (c.caption.isNotEmpty())
                     {
@@ -836,7 +836,7 @@ protected:
                             g.fillRect (cell);
                         }
                         g.setColour (juce::Colour (on ? 0xffd2d2d2u : 0xff8a8a8au)); // (the reference prints both options alike: the marker tells)
-                        g.setFont (font (type::small));
+                        g.setFont (font (type::smallSize));
                         g.drawText (c.keepCase ? tr (c.options[i]) : caps (tr (c.options[i])), cell, juce::Justification::centred, true);
                     }
                     const auto mx = sel <= 0 ? pill.getX() : pill.getRight() - marker;
@@ -857,7 +857,7 @@ protected:
                         g.fillRoundedRectangle (cell, radius::sm);
                     }
                     g.setColour (sel1 ? colour::textPrimary : colour::textSecondary);
-                    g.setFont (font (type::small, sel1));
+                    g.setFont (font (type::smallSize, sel1));
                     g.drawText (caps (tr (c.options[i])), cell, juce::Justification::centred, true);
                 }
                 break;
@@ -869,13 +869,13 @@ protected:
                     g.setColour (juce::Colours::white.withAlpha (0.06f));
                     g.fillRoundedRectangle (c.r, radius::md);
                 }
-                g.setFont (font (type::small));
+                g.setFont (font (type::smallSize));
                 g.setColour (colour::textDisabled);
                 const auto cap = c.caption + ":";
                 const auto cw = juce::GlyphArrangement::getStringWidth (g.getCurrentFont(), cap) + 6.0f;
                 g.drawText (cap, c.r.withWidth (cw).translated (6.0f, 0.0f), juce::Justification::centredLeft);
                 g.setColour (dragCtl == c.param && c.param >= 0 ? ac : colour::textPrimary);
-                g.setFont (font (type::small, true));
+                g.setFont (font (type::smallSize, true));
                 const auto value = c.type == K::barMenu ? tr (c.options[optionIndex (c)]) + juce::String::fromUTF8 (" \xe2\x96\xbe") : text (c.param);
                 g.drawText (value, c.r.withTrimmedLeft (cw + 6.0f), juce::Justification::centredLeft, true);
                 break;
@@ -895,7 +895,7 @@ protected:
     juce::Rectangle<float> autoPrefixRect (const Ctl& c, juce::Rectangle<float> captionRow) const
     {
         using namespace theme;
-        const auto f = font (c.size == 2 ? type::small : type::caption, true);
+        const auto f = font (c.size == 2 ? type::smallSize : type::caption, true);
         const auto prefixW = juce::GlyphArrangement::getStringWidth (f, "AUTO");
         const auto total = juce::GlyphArrangement::getStringWidth (f, "AUTO " + caps (c.caption));
         return { captionRow.getCentreX() - total * 0.5f, captionRow.getY(), prefixW, captionRow.getHeight() };
@@ -914,7 +914,7 @@ protected:
         if (showValue)
         {
             g.setColour (active ? ac.brighter (0.3f) : skin::valueColour (true));
-            g.setFont (font (big ? type::small : type::caption, true));
+            g.setFont (font (big ? type::smallSize : type::caption, true));
             g.drawText (text (param), row.expanded (24.0f, 0.0f), juce::Justification::centred, false);
             return;
         }
@@ -960,7 +960,7 @@ protected:
         using namespace theme;
         // (rangeRow pushes the ends 6 px past the row: the reference keeps them within the knob's ring)
         rangeRow (g, c.param, knobR.withY (knobR.getBottom() + 1.0f).withHeight (12.0f).reduced (referenceLabels ? 6.0f : 0.0f, 0.0f), c.showValue && (hover || active), c.size == 2, ac, active);
-        captionStyle (g, active, hot, ac, c.size == 2 ? type::small : type::caption);
+        captionStyle (g, active, hot, ac, c.size == 2 ? type::smallSize : type::caption);
         const auto captionY = captionAbove ? c.r.getY() - 14.0f : knobR.getBottom() + 14.0f;
         g.drawText (caps (c.caption), juce::Rectangle<float> (c.r.getX() - 14.0f, captionY, c.r.getWidth() + 28.0f, 14.0f),
                     juce::Justification::centred, false);

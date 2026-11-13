@@ -61,7 +61,7 @@ struct BarSlider
     void setUp (juce::Component& owner, const juce::String& caption, double lo, double hi, double step, double def, const juce::String& tip)
     {
         label.setText (caption, juce::dontSendNotification);
-        label.setFont (theme::font (theme::type::small));
+        label.setFont (theme::font (theme::type::smallSize));
         label.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         label.setJustificationType (juce::Justification::centredLeft);
         slider.setRange (lo, hi, step);
@@ -102,7 +102,7 @@ public:
         }
         addAndMakeVisible (slave);
         addAndMakeVisible (status);
-        status.setFont (theme::font (theme::type::small));
+        status.setFont (theme::font (theme::type::smallSize));
         status.setColour (juce::Label::textColourId, theme::colour::textSecondary);
 
         load.setButtonText (tr ("Load sample..."));
@@ -200,7 +200,7 @@ public:
 
         // the note panel (FL's Advanced Edit): the selected notes' own settings
         addAndMakeVisible (panelTitle);
-        panelTitle.setFont (theme::font (theme::type::small, true));
+        panelTitle.setFont (theme::font (theme::type::smallSize, true));
         panelTitle.setColour (juce::Label::textColourId, theme::colour::textPrimary);
         pitchKnob.setUp (*this, tr ("Pitch"), -24.0, 24.0, 0.01, 0.0, tr ("The note's pitch change in semitones (Alt+drag a note does the same)"));
         formantKnob.setUp (*this, tr ("Formant"), -12.0, 12.0, 0.1, 0.0, tr ("Moves the voice's formants (its apparent size, age or sex) without changing the pitch"));

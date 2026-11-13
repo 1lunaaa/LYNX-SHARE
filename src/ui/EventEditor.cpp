@@ -87,7 +87,7 @@ public:
         // selection tools
         for (auto* l : { &scaleLabel, &offsetLabel, &randomLabel, &lfoLabel })
         {
-            l->setFont (theme::font (theme::type::small));
+            l->setFont (theme::font (theme::type::smallSize));
             l->setColour (juce::Label::textColourId, theme::colour::textSecondary);
             addAndMakeVisible (*l);
         }
@@ -289,7 +289,7 @@ public:
         if (hoverValue >= 0.0f)
         {
             g.setColour (colour::textPrimary);
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             g.drawText (target.kind == AutomationTargetKind::tempo ? juce::String (tempoFromValue (hoverValue), 3) + " BPM" // (issue #86: as FL's hint)
                                                                 : juce::String (juce::roundToInt (hoverValue * 100.0f)) + "%",
                         area.getRight() - 90, area.getY() + 4, 84, 16,
@@ -1068,7 +1068,7 @@ void openConvertToAutomationPanel (int events, double initialPercent, std::funct
             slider.setTextValueSuffix ("%");
             slider.onValueChange = [this] { update(); };
             addAndMakeVisible (slider);
-            info.setFont (theme::font (theme::type::small));
+            info.setFont (theme::font (theme::type::smallSize));
             info.setColour (juce::Label::textColourId, theme::colour::textSecondary);
             addAndMakeVisible (info);
             accept.setButtonText (tr ("Accept"));

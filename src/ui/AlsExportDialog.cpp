@@ -31,7 +31,7 @@ public:
         body.setReadOnly (true);
         body.setScrollbarsShown (true);
         body.setCaretVisible (false);
-        body.setFont (theme::font (theme::type::small));
+        body.setFont (theme::font (theme::type::smallSize));
         body.setText (text.isEmpty() ? tr ("Everything went over to the Live set.") : text, false);
         addAndMakeVisible (body);
         show.onClick = [this] { file.revealToUser(); };
@@ -232,7 +232,7 @@ public:
         }
         (lastLive11 ? live11Button : live12Button).setToggleState (true, juce::dontSendNotification);
         (lastReference ? referenceButton : collectButton).setToggleState (true, juce::dontSendNotification);
-        plan.setFont (theme::font (theme::type::small));
+        plan.setFont (theme::font (theme::type::smallSize));
         plan.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         plan.setJustificationType (juce::Justification::topLeft);
         plan.setText (tr ("The set is saved as \"<name> Project/<name>.als\". Tracks, clips, notes, mixer levels, sends, "

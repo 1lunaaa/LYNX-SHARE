@@ -244,7 +244,7 @@ void PresetBar::paint (juce::Graphics& g, juce::Colour accent) const
         const auto lit = (side == 1) == showingB;
         skin::button (g, r, lit, hovered == (side == 0 ? Part::a : Part::b), accent, radius::sm);
         g.setColour (lit ? colour::textPrimary : colour::textSecondary);
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.drawText (side == 0 ? "A" : "B", r, juce::Justification::centred, false);
     }
     if (! rCopy.isEmpty())
@@ -267,7 +267,7 @@ void PresetBar::paint (juce::Graphics& g, juce::Colour accent) const
     const auto label = presetLabel();
     const auto named = fx->presetName.size() > 0;
     g.setColour (named ? colour::textPrimary : colour::textSecondary);
-    ui::drawFittingText (g, label, rPreset.reduced (6.0f, 0.0f), juce::Justification::centred, font (type::small, named), 7.5f, 0.0f, 0.7f); // (round 165)
+    ui::drawFittingText (g, label, rPreset.reduced (6.0f, 0.0f), juce::Justification::centred, font (type::smallSize, named), 7.5f, 0.0f, 0.7f); // (round 165)
     drawArrow (g, rPrev, true, hovered == Part::prev ? accent : colour::textSecondary);
     drawArrow (g, rNext, false, hovered == Part::next ? accent : colour::textSecondary);
 }

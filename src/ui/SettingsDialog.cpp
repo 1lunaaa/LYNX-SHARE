@@ -72,7 +72,7 @@ public:
         for (auto* l : { &ppqText, &stepsText, &signatureText })
         {
             styleLabel (*l, {});
-            l->setFont (theme::font (theme::type::small));
+            l->setFont (theme::font (theme::type::smallSize));
             addAndMakeVisible (l);
         }
         ppqText.setText (tr ("Timebase: {0} ticks per quarter note (PPQ). Projects from FL Studio are converted to it.", { juce::String (ppq) }),
@@ -400,7 +400,7 @@ public:
     {
         addAndMakeVisible (title);
         styleLabel (noteLabel, note);
-        noteLabel.setFont (theme::font (theme::type::small));
+        noteLabel.setFont (theme::font (theme::type::smallSize));
         addAndMakeVisible (noteLabel);
         list.setModel (this);
         list.setRowHeight (24);
@@ -452,7 +452,7 @@ private:
     {
         if (folders.isEmpty())
         {
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.setColour (theme::colour::textDisabled);
             g.drawText (tr ("(none yet)"), 10, 0, width - 20, height, juce::Justification::centredLeft);
             return;

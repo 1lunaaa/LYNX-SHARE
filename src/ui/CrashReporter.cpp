@@ -628,7 +628,7 @@ public:
         preview.setMultiLine (true, false);
         preview.setReadOnly (true);
         preview.setScrollbarsShown (true);
-        preview.setFont (juce::Font (theme::monoFont (theme::type::small)));
+        preview.setFont (juce::Font (theme::monoFont (theme::type::smallSize)));
         preview.setColour (juce::TextEditor::backgroundColourId, theme::colour::bg0);
         addChildComponent (preview);
         setSize (640, 10);

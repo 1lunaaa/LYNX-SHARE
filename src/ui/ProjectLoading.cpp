@@ -80,7 +80,7 @@ public:
         area.removeFromTop (10);
 
         auto line = area.removeFromTop (slowWait ? 36 : 18);
-        g.setFont (juce::Font (theme::font (theme::type::small)));
+        g.setFont (juce::Font (theme::font (theme::type::smallSize)));
         g.setColour (theme::colour::textSecondary);
         g.drawText (juce::String (juce::roundToInt (fraction * 100.0)) + " %", line.removeFromRight (48).removeFromTop (18), juce::Justification::centredRight);
         g.drawFittedText (statusText, line, juce::Justification::topLeft, slowWait ? 2 : 1);

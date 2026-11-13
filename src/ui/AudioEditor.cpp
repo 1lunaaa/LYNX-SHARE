@@ -1544,7 +1544,7 @@ private:
             g.fillRoundedRectangle (badge, radius::md);
             g.setColour (colour::record);
             g.fillEllipse (badge.removeFromLeft (20.0f).reduced (5.0f));
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.drawText (recState == RecState::recording ? juce::String ("REC") : tr ("Waiting..."), badge, juce::Justification::centredLeft);
         }
     }
@@ -1586,7 +1586,7 @@ private:
         g.drawHorizontalLine (infoArea.getY(), 0.0f, (float) getWidth());
 
         auto area = infoArea.reduced (10, 0);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         if (status.isNotEmpty())
         {
             g.setColour (statusIsError ? colour::meterClip : colour::textSecondary);

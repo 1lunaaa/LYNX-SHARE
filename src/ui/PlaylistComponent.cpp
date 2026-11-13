@@ -1619,7 +1619,7 @@ void PlaylistComponent::paint (juce::Graphics& g)
         g.setColour (colour::border);
         g.fillRect (ruler.withTop (ruler.getBottom() - 1));
         g.reduceClipRegion (ruler);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
 
         if (song.hasLoop()) // the time selection
         {
@@ -1691,7 +1691,7 @@ void PlaylistComponent::paint (juce::Graphics& g)
         {
             g.setColour (colour::bg2);
             g.fillRect (headers);
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
 
             auto colourOf = [&song] (int t) { return t >= 0 && t < (int) song.playlistTracks.size() ? song.playlistTracks[(std::size_t) t].colour : 0u; };
 
@@ -1821,7 +1821,7 @@ void PlaylistComponent::paint (juce::Graphics& g)
                     textLeft += (int) size + 4;
                 }
                 g.setColour (muted ? colour::textDisabled : (custom ? colour::textPrimary : colour::textSecondary));
-                g.setFont (font (type::small, groupHead));
+                g.setFont (font (type::smallSize, groupHead));
                 textcache::drawFittedText (g, custom ? juce::String::fromUTF8 (song.playlistTracks[(std::size_t) t].name.c_str())
                                          : tr ("Track {0}", { juce::String (t + 1) }),
                                   textLeft, y, juce::jmax (8, (int) textRight - textLeft - 2), trackHeight, juce::Justification::centredLeft,
@@ -7178,7 +7178,7 @@ void PatternPicker::paint (juce::Graphics& g)
             }
 
             g.setColour (clipTitleText (fill));
-            g.setFont (font (type::small, current));
+            g.setFont (font (type::smallSize, current));
             textcache::drawText (g, row.name, r.withTrimmedLeft (9).withTrimmedRight (4), juce::Justification::centredLeft, true);
         }
     }

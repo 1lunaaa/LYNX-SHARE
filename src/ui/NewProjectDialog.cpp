@@ -116,7 +116,7 @@ public:
         g.setFont (theme::font (theme::type::body, true));
         g.drawText (item.name, 12, 4, width - 20, 18, juce::Justification::centredLeft, true);
         g.setColour (theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.drawText (item.description, 12, 21, width - 20, 15, juce::Justification::centredLeft, true);
         // the line between the built-in templates and the user's
         if (row + 1 < (int) items.size() && item.builtIn != -2 && items[(std::size_t) row + 1].builtIn == -2)
@@ -209,7 +209,7 @@ public:
         ownFolder.setToggleState (remembered.ownFolder, juce::dontSendNotification);
         ownFolder.onClick = [this] { updatePath(); };
         addAndMakeVisible (ownFolder);
-        pathNote.setFont (theme::font (theme::type::small));
+        pathNote.setFont (theme::font (theme::type::smallSize));
         pathNote.setColour (juce::Label::textColourId, theme::colour::textDisabled);
         pathNote.setMinimumHorizontalScale (0.5f);
         addAndMakeVisible (pathNote);

@@ -396,7 +396,7 @@ private:
         if (n == 0)
         {
             g.setColour (colour::textDisabled);
-            g.setFont (font (type::small));
+            g.setFont (font (type::smallSize));
             g.drawText (tr ("Display off"), p.withTrimmedBottom (p.getHeight() * 0.5f), juce::Justification::centred, false);
         }
 
@@ -446,7 +446,7 @@ private:
         g.setColour (hot ? accent : juce::Colour (0xff2a2d3a));
         g.drawRoundedRectangle (box, 4.0f, 1.0f);
         g.setColour (colour::textPrimary);
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.drawText ((gainDb() >= 0.05 ? "+" : "") + juce::String (gainDb(), 1), box, juce::Justification::centred, false);
         caption (g, juce::Rectangle<float> (tr_.getX() - 10.0f, tr_.getBottom() + 18.0f, 54.0f, 14.0f), tr ("Gain"));
 
@@ -505,7 +505,7 @@ private:
             if (! tab.r.isEmpty())
             {
                 g.setColour (colour::textSecondary);
-                g.setFont (font (type::small, true));
+                g.setFont (font (type::smallSize, true));
                 g.drawText (juce::String::fromUTF8 ("\xc2\xbb"), tab.r.withHeight (18.0f), juce::Justification::centred, false);
                 g.saveState();
                 g.addTransform (juce::AffineTransform::rotation (juce::MathConstants<float>::halfPi, tab.r.getCentreX(), tab.r.getCentreY() + 8.0f));
@@ -550,7 +550,7 @@ private:
             g.setFont (font (type::caption));
             g.drawText (name, juce::Rectangle<float> (x, y, w, 12.0f), juce::Justification::centredLeft, false);
             g.setColour (colour::textPrimary);
-            g.setFont (font (big ? type::title : type::small, true));
+            g.setFont (font (big ? type::title : type::smallSize, true));
             g.drawText (value <= -100.0f ? juce::String ("-inf") : juce::String (value, 1) + " " + unit, juce::Rectangle<float> (x, y + 12.0f, w, big ? 22.0f : 16.0f),
                         juce::Justification::centredLeft, false);
         };
@@ -926,7 +926,7 @@ private:
                 g.setColour (hot && dragHandle == k ? colour::textPrimary : colour::textSecondary);
                 g.fillPath (handle);
             }
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.setColour (colour::warning);
             g.drawText (text (pFreq()), juce::Rectangle<float> (tr_.getX() - 6.0f, tr_.getBottom() + 10.0f, 70.0f, 14.0f), juce::Justification::centredLeft, false);
             const auto lpOff = v (P ("Low-pass freq.")) >= 0.999f;
@@ -973,7 +973,7 @@ private:
             skin::button (g, half, ! ext, half.contains (mouse), accent, radius::sm);
             skin::button (g, half.translated (half.getWidth(), 0.0f), ext, half.translated (half.getWidth(), 0.0f).contains (mouse), accent, radius::sm);
             g.setColour (colour::textPrimary);
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.drawText (tr ("In"), half, juce::Justification::centred, false);
             g.drawText (tr ("Ext"), half.translated (half.getWidth(), 0.0f), juce::Justification::centred, false);
             caption (g, { c.r.getX() - 92.0f, c.r.getY(), 88.0f, c.r.getHeight() }, tr ("Side chain"), juce::Justification::centredRight);
@@ -1329,7 +1329,7 @@ private:
             if (c.type == K::button && c.id == idKnee) tab = c;
         if (tab.r.isEmpty()) return;
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.drawText (juce::String::fromUTF8 (kneeOpen ? "\xc2\xab" : "\xc2\xbb"), tab.r.withHeight (18.0f), juce::Justification::centred, false);
         const juce::Point<float> centre (tab.r.getCentreX(), tab.r.getCentreY() + 8.0f);
         g.saveState();
@@ -1606,7 +1606,7 @@ private:
             g.setColour (colour::textPrimary);
             g.fillRoundedRectangle (juce::Rectangle<float> (8.0f, t.getHeight() + 6.0f).withCentre ({ x, t.getCentreY() }), 2.0f);
         }
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.setColour (colour::warning);
         g.drawText (text (highPass), juce::Rectangle<float> (t.getX() - 30.0f, t.getBottom() + 4.0f, 80.0f, 14.0f), juce::Justification::centredLeft, false);
         g.drawText (text (lowPass), juce::Rectangle<float> (t.getRight() - 50.0f, t.getBottom() + 4.0f, 80.0f, 14.0f), juce::Justification::centredRight, false);
@@ -2521,7 +2521,7 @@ private:
                     g.fillRect (key.reduced (1.0f).withWidth (4.0f));
                 }
                 g.setColour (juce::Colour (0xffd2d2d2));
-                g.setFont (font (type::small));
+                g.setFont (font (type::smallSize));
                 g.drawText (tr ("Audition"), key, juce::Justification::centred, false);
             }
             if (! lit) // a switched-off band's panel is dimmed, as the reference's; its power tile stays bright
@@ -2577,7 +2577,7 @@ private:
             g.setGradientFill (juce::ColourGradient (juce::Colour (0xffe6e6e6), 0.0f, r.getY(), juce::Colour (0xffc2c2c2), 0.0f, r.getBottom(), false));
             g.fillRoundedRectangle (r, 3.0f);
             g.setColour (juce::Colour (0xff202020));
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.drawText (tr ("Band {0}", { juce::String (hoverBand + 1) }), r.withHeight (16.0f).translated (0.0f, 2.0f), juce::Justification::centred, false);
             g.setFont (font (type::caption));
             g.drawText (text (bp (hoverBand, fLevel)), r.withTrimmedTop (17.0f).withHeight (13.0f), juce::Justification::centred, false);
@@ -3178,7 +3178,7 @@ private:
             g.setColour (c);
             g.fillRoundedRectangle (juce::Rectangle<float> (a.getX() + 14.0f, a.getY() - 1.0f, 46.0f, 3.0f), 1.5f);
             g.setColour (colour::textSecondary);
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             if (showMod) // round 152: the modulation panel's captions
             {
                 g.drawText (tr ("Modulation"), juce::Rectangle<float> (a.getX() + 12.0f, a.getY() + 10.0f, 120.0f, 26.0f), juce::Justification::centredLeft, false);

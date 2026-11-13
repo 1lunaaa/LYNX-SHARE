@@ -1098,7 +1098,7 @@ public:
         skin::powerLed (g, { 36.0f, h.getCentreY() }, 7.0f, fx.enabled);
         const auto w = skin::titleText (g, juce::Rectangle<float> (46.0f, 0.0f, 120.0f, h.getHeight()), "Facet EQ", colour::accent);
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         if (! plugui::hostedElsewhere) // (no mixer around a plugin in another host, round 180b)
             g.drawText (trackName() + "  -  " + tr ("slot {0}", { juce::String (slot + 1) }), juce::Rectangle<float> (58.0f + w, 0.0f, 300.0f, h.getHeight()),
                         juce::Justification::centredLeft, true);
@@ -1133,7 +1133,7 @@ public:
                 const auto on = capture != Capture::none;
                 skin::button (g, c.r, on, hover, colour::accent);
                 g.setColour (on || (refFrames > 0 && curFrames > 0) ? colour::textPrimary : colour::textSecondary);
-                g.setFont (font (type::small, on));
+                g.setFont (font (type::smallSize, on));
                 g.drawText (tr ("Match"), c.r, juce::Justification::centred);
             }
             else if (c.type == Ctl::listen) // round 166f: EQ | Source | Target
@@ -1146,7 +1146,7 @@ public:
                 g.fillRoundedRectangle (c.r, radius::sm);
                 skin::button (g, c.r, on, hover, tint);
                 g.setColour (on ? colour::textPrimary : usable ? colour::textSecondary : colour::textDisabled);
-                g.setFont (font (type::small, on));
+                g.setFont (font (type::smallSize, on));
                 g.drawFittedText (tr (listenLabel (l)), c.r.toNearestInt(), juce::Justification::centred, 1, 0.7f);
             }
             else if (c.type == Ctl::compareMenu)
@@ -1155,7 +1155,7 @@ public:
                 g.fillRoundedRectangle (c.r, radius::sm);
                 skin::button (g, c.r, capture == Capture::both, hover, colour::info);
                 g.setColour (colour::textSecondary);
-                g.setFont (font (type::small));
+                g.setFont (font (type::smallSize));
                 g.drawText (juce::String::fromUTF8 ("\xe2\x96\xbe"), c.r, juce::Justification::centred);
             }
             else if (c.type == Ctl::phase || c.type == Ctl::analyzer || c.type == Ctl::detector)
@@ -1183,12 +1183,12 @@ public:
                     g.setColour (juce::Colours::white.withAlpha (0.06f));
                     g.fillRoundedRectangle (c.r, radius::md);
                 }
-                g.setFont (font (type::small));
+                g.setFont (font (type::smallSize));
                 g.setColour (colour::textDisabled);
                 const auto cw = juce::GlyphArrangement::getStringWidth (g.getCurrentFont(), caption) + 6.0f;
                 g.drawText (caption, c.r.withWidth (cw).translated (6.0f, 0.0f), juce::Justification::centredLeft);
                 g.setColour (colour::textPrimary);
-                g.setFont (font (type::small, true));
+                g.setFont (font (type::smallSize, true));
                 g.drawText (value + juce::String::fromUTF8 (" \xe2\x96\xbe"), c.r.withTrimmedLeft (cw + 6.0f), juce::Justification::centredLeft, true);
             }
             else if (c.type == Ctl::autoGain)
@@ -1196,7 +1196,7 @@ public:
                 const auto on = param01 (autoGainParam) >= 0.5f;
                 skin::button (g, c.r, on, hover, colour::accent);
                 g.setColour (on ? colour::textPrimary : colour::textSecondary);
-                g.setFont (font (type::small, on));
+                g.setFont (font (type::smallSize, on));
                 g.drawText (tr ("Auto gain"), c.r, juce::Justification::centred);
             }
             else if (c.type == Ctl::output || c.type == Ctl::scale || c.type == Ctl::pan)
@@ -1212,7 +1212,7 @@ public:
                 g.drawText (c.type == Ctl::output ? tr ("OUT") : c.type == Ctl::pan ? (panMidSide (param01 (panModeParam)) ? tr ("M/S") : tr ("PAN")) : tr ("SCALE"),
                             c.r.reduced (6.0f, 0.0f), juce::Justification::centredLeft);
                 g.setColour (colour::textPrimary);
-                g.setFont (font (type::small, true));
+                g.setFont (font (type::smallSize, true));
                 g.drawText (valueText (c.param), c.r.reduced (6.0f, 0.0f), juce::Justification::centredRight);
             }
         }
@@ -1235,11 +1235,11 @@ public:
         using namespace theme;
         const auto r = tipArea (b);
         skin::floatingPanel (g, r, bandColour (b), radius::lg);
-        g.setFont (font (type::small, true));
+        g.setFont (font (type::smallSize, true));
         g.setColour (colour::textPrimary);
         auto t = r.reduced (8.0f, 4.0f);
         g.drawText (hzText (hz (param01 (param (b, 1)))), t.removeFromTop (17.0f).withTrimmedRight (60.0f), juce::Justification::centredLeft);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawText (hasGain (bandShape (b)) ? valueText (param (b, 2)) : tr (shapeNames[(int) bandShape (b)]), t.removeFromTop (16.0f), juce::Justification::centredLeft);
         g.setColour (colour::textSecondary);
         const auto pl = bandPlacement (b);
@@ -1342,7 +1342,7 @@ public:
             g.setColour (r.contains (mouse) ? colour::bg5 : colour::bg4);
             g.fillRoundedRectangle (r, radius::md);
             g.setColour (colour::accentHover);
-            g.setFont (font (type::small, true));
+            g.setFont (font (type::smallSize, true));
             g.drawText (juce::String ((int) rangeDb) + " dB", r, juce::Justification::centred);
         }
 
@@ -1597,7 +1597,7 @@ public:
         auto drawButton = [&] (juce::Rectangle<float> r, const juce::String& text, bool on, juce::Colour onColour) {
             skin::button (g, r, on, r.contains (mouse), onColour);
             g.setColour (on ? colour::textPrimary : colour::textSecondary);
-            g.setFont (font (type::small, on));
+            g.setFont (font (type::smallSize, on));
             g.drawText (text, r.reduced (6.0f, 0.0f), juce::Justification::centred, true);
         };
         auto drawArrow = [&] (juce::Rectangle<float> r, bool left) {
@@ -1623,7 +1623,7 @@ public:
             drawPowerGlyph (g, pr.reduced (2.0f), on ? colour::bg0 : (pr.contains (mouse) ? colour::textPrimary : colour::textSecondary));
         }
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawText (tr ("Band {0}", { juce::String (selected + 1) }), juce::Rectangle<float> (panel.getX() + 36.0f, panel.getY() + 6.0f, 90.0f, 20.0f), juce::Justification::centredLeft);
 
         for (const auto& c : all)
@@ -1654,7 +1654,7 @@ public:
                     g.drawLine (r.getRight(), r.getY(), r.getX(), r.getBottom(), 1.5f);
                     // the band number between the arrows
                     g.setColour (colour::textPrimary);
-                    g.setFont (font (type::small, true));
+                    g.setFont (font (type::smallSize, true));
                     g.drawText (juce::String (selected + 1), c.r.translated (-44.0f, 0.0f).withWidth (22.0f), juce::Justification::centred);
                     break;
                 }
@@ -1696,7 +1696,7 @@ public:
                     g.setFont (font (type::caption, true));
                     g.drawText (tr (captions.at (c.type)), c.r.withY (c.r.getBottom() - 34.0f).withHeight (14.0f), juce::Justification::centred);
                     g.setColour (skin::valueColour (c.r.contains (mouse) || active));
-                    g.setFont (font (type::small));
+                    g.setFont (font (type::smallSize));
                     g.drawText (valueText (c.param), c.r.withTop (c.r.getBottom() - 20.0f), juce::Justification::centred, true);
                     break;
                 }

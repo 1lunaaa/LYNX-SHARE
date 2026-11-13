@@ -1,3 +1,7 @@
+#ifndef NOMINMAX
+ #define NOMINMAX
+#endif
+
 #include "engine/AudioEngine.h"
 #include "core/VideoPlayer.h"
 

@@ -1025,7 +1025,7 @@ public:
             // the detail after the name, dimmed: "(insert)", "3x", "missing", a section's count
             if (n.detail.isNotEmpty() && nameWidth + 12 < text.getWidth())
             {
-                g.setFont (theme::font (theme::type::small));
+                g.setFont (theme::font (theme::type::smallSize));
                 g.setColour (n.missing ? meterClip.withAlpha (0.7f) : textDisabled);
                 const auto shown = n.kind == Kind::category || n.kind == Kind::project ? n.detail : "(" + n.detail + ")";
                 if (n.kind == Kind::category) // the count on the right
@@ -1044,7 +1044,7 @@ public:
         if (rows.empty() && status.isNotEmpty())
         {
             g.setColour (textDisabled);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawFittedText (status, getLocalBounds().reduced (10).withHeight (60), juce::Justification::centredTop, 3);
         }
     }
@@ -2343,7 +2343,7 @@ public:
         if (file == juce::File() || ! isAudio (file))
         {
             g.setColour (textDisabled);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawFittedText (tr ("Click a sample to hear it; its waveform shows here"), area, juce::Justification::centred, 2);
             return;
         }
@@ -2844,7 +2844,7 @@ public:
         title.setFont (theme::font (theme::type::body, true));
         title.setColour (juce::Label::textColourId, theme::colour::textPrimary);
         addAndMakeVisible (title);
-        note.setFont (theme::font (theme::type::small));
+        note.setFont (theme::font (theme::type::smallSize));
         note.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         note.setJustificationType (juce::Justification::topLeft);
         addAndMakeVisible (note);
@@ -2962,7 +2962,7 @@ private:
             if (e.user)
                 name << "  " << tr ("(your folder)");
             g.drawText (name, top, juce::Justification::bottomLeft, true);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.setColour (theme::colour::textDisabled);
             auto detail = e.path;
             if (e.empty)

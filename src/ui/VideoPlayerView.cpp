@@ -290,7 +290,7 @@ public:
         g.setColour (theme::colour::border);
         g.drawHorizontalLine (0, 0.0f, (float) getWidth());
         g.setColour (theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.drawText (status, getLocalBounds().withTrimmedTop (getHeight() - 18).reduced (8, 0), juce::Justification::centredLeft);
     }
 };
@@ -399,7 +399,7 @@ public:
         auto r = getLocalBounds().withTrimmedTop (boxHeight).toFloat();
         g.setColour (theme::colour::bg0.withAlpha (0.92f));
         g.fillRect (r);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.setColour (theme::colour::textSecondary);
         g.drawText (juce::String::fromUTF8 ("\xe2\x9c\x93"), tickArea().toFloat(), juce::Justification::centred);
         g.drawText (juce::String::fromUTF8 ("\xe2\x9c\x95"), crossArea().toFloat(), juce::Justification::centred);

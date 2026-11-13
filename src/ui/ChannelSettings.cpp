@@ -112,7 +112,7 @@ public:
         {
             auto& row = rows[(std::size_t) e];
             row.title.setText (titles[e], juce::dontSendNotification);
-            row.title.setFont (theme::font (theme::type::small));
+            row.title.setFont (theme::font (theme::type::smallSize));
             addAndMakeVisible (row.title);
             knob (row.amount, e == 0 ? -10.0 : -48.0, e == 0 ? 10.0 : 48.0, 0.01, e == 0 ? " oct" : " st");
             row.amount.setDoubleClickReturnValue (true, 0.0);
@@ -226,7 +226,7 @@ public:
         {
             auto& row = rows[(std::size_t) i];
             row.title.setText (titles[i], juce::dontSendNotification);
-            row.title.setFont (theme::font (theme::type::small));
+            row.title.setFont (theme::font (theme::type::smallSize));
             addAndMakeVisible (row.title);
             knob (row.amount, -amountRange[i], amountRange[i], 0.01, amountSuffix[i]);
             row.amount.setDoubleClickReturnValue (true, 0.0);
@@ -2122,7 +2122,7 @@ public:
             g.setColour (accent.withAlpha (0.18f));
             g.fillRoundedRectangle (band, 4.0f);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawFittedText (tr ("Needs FL Studio's files: the engine file was not found, so the channel stays silent (its settings are kept)."),
                               band.reduced (6.0f, 0.0f).toNearestInt(), juce::Justification::centredLeft, 1, 0.7f);
         }
@@ -2131,7 +2131,7 @@ public:
             paintLayout (g);
             return;
         }
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         for (const auto& k : knobs)
             g.drawText (k->getName(), k->getBounds().withHeight (14).translated (0, -14), juce::Justification::centred);
     }
@@ -2576,7 +2576,7 @@ private:
         granulizerModes = true;
         auto label = [this] (juce::Label& l, const juce::String& text) {
             l.setText (text, juce::dontSendNotification);
-            l.setFont (theme::font (theme::type::small));
+            l.setFont (theme::font (theme::type::smallSize));
             addAndMakeVisible (l);
         };
         label (granKeyToLabel, tr ("Key to"));

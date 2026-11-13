@@ -18,7 +18,7 @@ public:
         title.setFont (theme::font (theme::type::title, true));
         addAndMakeVisible (title);
         note.setText (tr ("Click a step to go back (or forward) to it. Newest at the bottom."), juce::dontSendNotification);
-        note.setFont (theme::font (theme::type::small));
+        note.setFont (theme::font (theme::type::smallSize));
         note.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (note);
 

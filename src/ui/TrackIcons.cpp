@@ -575,7 +575,7 @@ public:
                 drawTrackIcon (g, e.icon, r.reduced (5.0f), isCurrent ? colour::textPrimary : colour::textSecondary.brighter (0.25f));
         }
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         const auto shown = hovered >= 0 ? trackicons::entries[(std::size_t) hovered].icon : current;
         g.drawText (tr (juce::String (std::string (trackicons::nameOf (shown)))), getLocalBounds().removeFromBottom (footer).reduced (margin, 0),
                     juce::Justification::centredLeft, true);

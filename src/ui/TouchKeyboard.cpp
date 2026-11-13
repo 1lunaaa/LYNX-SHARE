@@ -169,7 +169,7 @@ public:
         octaveUp.onClick = [this] { shift (1); };
         addAndMakeVisible (octaveDown);
         addAndMakeVisible (octaveUp);
-        range.setFont (theme::monoFont (theme::type::small));
+        range.setFont (theme::monoFont (theme::type::smallSize));
         range.setJustificationType (juce::Justification::centred);
         range.setColour (juce::Label::textColourId, theme::colour::textPrimary);
         addAndMakeVisible (range);

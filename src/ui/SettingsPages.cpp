@@ -1151,7 +1151,7 @@ public:
         };
         styleCombo (type);
         offsetLabel.setText (tr ("Offset (ms)"), juce::dontSendNotification);
-        offsetLabel.setFont (theme::font (theme::type::small));
+        offsetLabel.setFont (theme::font (theme::type::smallSize));
         offsetLabel.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         offset.setSliderStyle (juce::Slider::IncDecButtons);
         offset.setTextBoxStyle (juce::Slider::TextBoxLeft, false, 56, 24);
@@ -1568,7 +1568,7 @@ private:
             list.push_back (l);
         if (list.empty() || row >= (int) list.size())
         {
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.setColour (theme::colour::textDisabled);
             g.drawText (tr ("(none yet)"), 10, 0, width - 20, height, juce::Justification::centredLeft);
             return;

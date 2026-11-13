@@ -53,7 +53,7 @@ public:
             g.setColour (isMouseOverOrDragging() ? theme::colour::bg5 : theme::colour::bg4);
             g.fillRoundedRectangle (area, 3.0f);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawText (spec.text (value), area, juce::Justification::centred);
             return;
         }
@@ -194,7 +194,7 @@ public:
         ui::setHint (multimode, tr ("Multimode: how an input mapped to several notes plays them"));
         addAndMakeVisible (multimode);
         multimodeLabel.setText (tr ("Multimode"), juce::dontSendNotification);
-        multimodeLabel.setFont (theme::font (theme::type::small));
+        multimodeLabel.setFont (theme::font (theme::type::smallSize));
         addAndMakeVisible (multimodeLabel);
 
         offset.caption = tr ("Offset");
@@ -280,7 +280,7 @@ public:
             g.setColour (black ? theme::colour::bg4 : theme::colour::bg6);
             g.fillRoundedRectangle (label.reduced (1.0f, 1.5f), 2.0f);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawText (pitchClassName (pc + settings.baseKey), label.reduced (6.0f, 0.0f), juce::Justification::centredLeft);
             // the unchanged note (a faint diagonal)
             g.setColour (theme::colour::bg5.withAlpha (0.55f));
@@ -479,7 +479,7 @@ public:
             g.setColour (theme::noteGroupHue (c));
             g.fillRoundedRectangle (row.removeFromLeft (26.0f).reduced (3.0f), 3.0f);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawText (juce::String (c + 1), row.reduced (4.0f, 0.0f), juce::Justification::centredLeft);
         }
     }
@@ -1018,7 +1018,7 @@ public:
                                  "not played. Click again to end (the last zone runs to the top)"));
         manual.onClick = [this] { manual.getToggleState() ? startMapping() : finishMapping(); };
         addAndMakeVisible (manual);
-        mappingHint.setFont (theme::font (theme::type::small));
+        mappingHint.setFont (theme::font (theme::type::smallSize));
         mappingHint.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (mappingHint);
         for (int z = 0; z < 16; ++z)
@@ -2560,7 +2560,7 @@ private:
             Row row;
             row.control = k;
             row.label = std::make_unique<juce::Label> (juce::String(), juce::String::fromUTF8 (c.label.c_str()));
-            row.label->setFont (theme::font (theme::type::small));
+            row.label->setFont (theme::font (theme::type::smallSize));
             row.label->setJustificationType (juce::Justification::centredRight);
             row.label->setColour (juce::Label::textColourId, theme::colour::textSecondary);
             row.label->setMinimumHorizontalScale (0.7f);
@@ -2593,7 +2593,7 @@ private:
                 case T::text:
                 {
                     auto t = std::make_unique<juce::TextEditor>();
-                    t->setFont (theme::font (theme::type::small));
+                    t->setFont (theme::font (theme::type::smallSize));
                     t->onReturnKey = [this, k, raw = t.get()] { setValue (k, 0.0, raw->getText().toStdString()); };
                     t->onFocusLost = t->onReturnKey;
                     ui::setHint (*t, hint);
@@ -2730,7 +2730,7 @@ private:
             g.setColour (theme::colour::record.withAlpha (0.12f));
             g.fillRoundedRectangle (statusArea.toFloat(), 3.0f);
             g.setColour (theme::colour::record);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.drawFittedText (statusText, statusArea.reduced (8, 2), juce::Justification::centredLeft, 2);
         }
         for (const auto& [name, r] : groupHeaders)
@@ -2738,7 +2738,7 @@ private:
             g.setColour (theme::colour::bg3);
             g.fillRect (r);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::font (theme::type::small, true));
+            g.setFont (theme::font (theme::type::smallSize, true));
             g.drawText (name, r.reduced (8, 0), juce::Justification::centredLeft);
         }
         if (info != nullptr && ! info->outputs.empty())
@@ -3043,7 +3043,7 @@ public:
         ui::setHint (port, tr ("Output port: output 1 goes out on this MIDI port, output 2 on the next one…; the plugins and Patchers "
                                "that take that port play it"));
         portLabel.setText (tr ("Output port"), juce::dontSendNotification);
-        portLabel.setFont (theme::font (theme::type::small));
+        portLabel.setFont (theme::font (theme::type::smallSize));
         connect.setButtonText (tr ("Send to a plugin..."));
         connect.onClick = [this] { showConnectMenu(); };
         ui::setHint (connect, tr ("Sets a plugin channel's MIDI input port to this port, so it plays what this channel sends"));

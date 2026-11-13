@@ -585,7 +585,7 @@ private:
         const auto bars = (arrangeops::lengthOf (song, row) + bar - 1) / bar;
         const auto clips = (int) arrangeops::clipsOf (song, row).size();
         g.setColour (theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.drawText (tr ("{0} clips, {1} bars", { juce::String (clips), juce::String ((int) bars) }), width - 150, 0, 140, height,
                     juce::Justification::centredRight);
     }

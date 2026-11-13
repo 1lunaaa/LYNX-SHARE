@@ -134,7 +134,7 @@ public:
         for (const auto& [label, text] : labels)
         {
             label->setText (tr (text), juce::dontSendNotification);
-            label->setFont (theme::font (theme::type::small));
+            label->setFont (theme::font (theme::type::smallSize));
             addAndMakeVisible (*label);
         }
         copy.setButtonText (tr ("Copy"));
@@ -174,7 +174,7 @@ public:
     {
         g.fillAll (theme::colour::bg2);
         g.setColour (theme::colour::textSecondary);
-        g.setFont (theme::font (theme::type::small));
+        g.setFont (theme::font (theme::type::smallSize));
         g.drawText (juce::CharPointer_UTF8 ("\xe2\x80\x93"), rangeDash, juce::Justification::centred); // between min and max
     }
 
@@ -338,7 +338,7 @@ public:
         for (const auto& [label, text] : labels)
         {
             label->setText (tr (text), juce::dontSendNotification);
-            label->setFont (theme::font (theme::type::small));
+            label->setFont (theme::font (theme::type::smallSize));
             label->setColour (juce::Label::textColourId, theme::colour::textSecondary);
             addAndMakeVisible (*label);
         }
@@ -357,7 +357,7 @@ public:
         addAndMakeVisible (automate);
         automate.setVisible (channel >= 0);
         connect.setVisible (channel >= 0);
-        listeners.setFont (theme::font (theme::type::small));
+        listeners.setFont (theme::font (theme::type::smallSize));
         listeners.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         listeners.setJustificationType (juce::Justification::centredLeft);
         listeners.setMinimumHorizontalScale (1.0f);
@@ -528,7 +528,7 @@ private:
             const auto labelHover = isMouseOver() && labelArea().contains (getMouseXYRelative());
             g.setColour (look == Look::sending ? theme::colour::textPrimary : labelHover ? theme::colour::textSecondary : theme::colour::textDisabled);
             ui::drawFittingText (g, utf (midiout::label (c)), labelArea().toFloat(), juce::Justification::centredTop,
-                                 juce::Font (theme::font (theme::type::small, look == Look::sending)));
+                                 juce::Font (theme::font (theme::type::smallSize, look == Look::sending)));
         }
 
         void mouseMove (const juce::MouseEvent& e) override

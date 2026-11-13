@@ -141,7 +141,7 @@ ColourPicker::ColourPicker (juce::Colour initial, bool isCompact) : original (in
             update (true, &s);
         };
         l.setText (name, juce::dontSendNotification);
-        l.setFont (theme::font (theme::type::small));
+        l.setFont (theme::font (theme::type::smallSize));
         l.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (s);
         addAndMakeVisible (l);
@@ -151,7 +151,7 @@ ColourPicker::ColourPicker (juce::Colour initial, bool isCompact) : original (in
     setUp (brightnessSlider, brightnessLabel, tr ("Brightness"), 100.0, "%");
 
     hexLabel.setText (tr ("Hex"), juce::dontSendNotification);
-    hexLabel.setFont (theme::font (theme::type::small));
+    hexLabel.setFont (theme::font (theme::type::smallSize));
     hexLabel.setColour (juce::Label::textColourId, theme::colour::textSecondary);
     addAndMakeVisible (hexLabel);
     hexField.setFont (theme::monoFont (theme::type::body));
@@ -252,7 +252,7 @@ void ColourPicker::paint (juce::Graphics& g)
     g.fillRoundedRectangle (half, 4.0f);
     g.setColour (getColour());
     g.fillRoundedRectangle (half.withX (half.getRight()), 4.0f);
-    g.setFont (theme::font (theme::type::small));
+    g.setFont (theme::font (theme::type::smallSize));
     g.setColour (juce::Colour (themes::readableTextOn (original.getARGB())));
     g.drawText (tr ("Before"), half.toNearestInt(), juce::Justification::centred);
     g.setColour (juce::Colour (themes::readableTextOn (getColour().getARGB())));

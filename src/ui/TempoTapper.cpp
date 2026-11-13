@@ -113,7 +113,7 @@ public:
         g.setFont (monoFont (22.0f));
         g.setColour (lastBpm > 0.0 ? colour::textPrimary : colour::textDisabled);
         g.drawText (lastBpm > 0.0 ? juce::String (lastBpm, 2) + " BPM" : juce::String ("--- BPM"), info.removeFromTop (26), juce::Justification::centred);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.setColour (colour::textSecondary);
         g.drawText (stateText(), info, juce::Justification::centred);
 

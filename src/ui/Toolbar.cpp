@@ -1080,7 +1080,7 @@ void CustomizePanel::paint (juce::Graphics& g)
     using namespace theme;
     g.fillAll (colour::bg2);
     auto area = getLocalBounds().reduced (16);
-    g.setFont (font (type::small, true));
+    g.setFont (font (type::smallSize, true));
     g.setColour (colour::textSecondary);
     g.drawText (tr ("Toolbar groups, left to right (uncheck to hide):"), area.removeFromTop (20), juce::Justification::centredLeft);
 
@@ -1384,7 +1384,7 @@ void EditOverlay::paint (juce::Graphics& g)
     g.setColour (overTray ? colour::accent : colour::border);
     g.fillRect (tray.withHeight (overTray ? 2 : 1));
 
-    g.setFont (font (type::small, true));
+    g.setFont (font (type::smallSize, true));
     g.setColour (overTray ? colour::accentHover : colour::textSecondary);
     g.drawText (overTray ? tr ("Release to remove this panel from the toolbar")
                          : tr ("Edit toolbar: drag panels to move them, drag a panel here to remove it, drag one from here onto the toolbar to add it"),

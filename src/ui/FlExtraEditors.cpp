@@ -178,7 +178,7 @@ public:
         const auto s = state();
         skin::button (g, box.withWidth (half), ! s, isMouseOver(), theme::colour::accent);
         skin::button (g, box.withTrimmedLeft (half), s, isMouseOver(), theme::colour::accent);
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         g.setColour (! s ? theme::colour::textPrimary : theme::colour::textSecondary);
         g.drawFittedText (off, box.withWidth (half).toNearestInt(), juce::Justification::centred, 1);
         g.setColour (s ? theme::colour::textPrimary : theme::colour::textSecondary);
@@ -858,7 +858,7 @@ public:
             const auto cell = box.withX (box.getX() + w * (float) i).withWidth (w).reduced (1.0f, 0.0f);
             const auto lit = direction() == i - 1;
             skin::button (g, cell, lit, isMouseOver(), theme::colour::accent);
-            g.setFont (theme::font (theme::type::small, true));
+            g.setFont (theme::font (theme::type::smallSize, true));
             g.setColour (lit ? theme::colour::textPrimary : theme::colour::textSecondary);
             g.drawFittedText (labels[i], cell.toNearestInt(), juce::Justification::centred, 1);
         }
@@ -983,7 +983,7 @@ public:
         g.fillAll (theme::colour::bg0);
 
         // the sample's name
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         g.setColour (sampleName.isEmpty() ? theme::colour::textDisabled : theme::colour::textPrimary);
         g.drawFittedText (sampleName.isEmpty() ? tr ("No sample: load one or drop a file") : sampleName, nameArea.reduced (2, 0),
                           juce::Justification::centredLeft, 1);

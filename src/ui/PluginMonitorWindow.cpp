@@ -40,7 +40,7 @@ public:
         // header
         g.setColour (theme::colour::bg3);
         g.fillRect (0, 0, getWidth(), headerHeight);
-        g.setFont (theme::font (theme::type::small, true));
+        g.setFont (theme::font (theme::type::smallSize, true));
         const juce::String names[] = { tr ("Plugin"), tr ("Where"), tr ("Now"), tr ("Average"), tr ("Peak") };
         const perfmon::SortBy keys[] = { perfmon::SortBy::name, perfmon::SortBy::name, perfmon::SortBy::current, perfmon::SortBy::average, perfmon::SortBy::peak };
         for (int c = 0; c < 5; ++c)
@@ -75,7 +75,7 @@ public:
             g.setFont (theme::font (theme::type::body, r.source.plugin));
             g.setColour (theme::colour::textPrimary);
             g.drawText (juce::String::fromUTF8 (r.source.name.c_str()), cols[0].withY (y).withHeight (rowHeight).reduced (8, 0), juce::Justification::centredLeft, true);
-            g.setFont (theme::font (theme::type::small));
+            g.setFont (theme::font (theme::type::smallSize));
             g.setColour (theme::colour::textSecondary);
             g.drawText (describe ? describe (r.source) : juce::String::fromUTF8 (r.source.where.c_str()), cols[1].withY (y).withHeight (rowHeight).reduced (8, 0),
                         juce::Justification::centredLeft, true);
@@ -87,7 +87,7 @@ public:
             g.setColour (loadColour (r.current).withAlpha (0.55f));
             g.fillRoundedRectangle (now.toFloat().withWidth ((float) now.getWidth() * (float) juce::jlimit (0.0, 1.0, r.current / 100.0)), 2.0f);
             g.setColour (theme::colour::textPrimary);
-            g.setFont (theme::monoFont (theme::type::small));
+            g.setFont (theme::monoFont (theme::type::smallSize));
             g.drawText (percent (r.current), now.reduced (4, 0), juce::Justification::centredRight);
             g.setColour (theme::colour::textSecondary);
             g.drawText (percent (r.average), cols[3].withY (y).withHeight (rowHeight).reduced (8, 0), juce::Justification::centredRight);
@@ -161,7 +161,7 @@ public:
         total.setFont (theme::font (theme::type::body, true));
         total.setColour (juce::Label::textColourId, theme::colour::textPrimary);
         addAndMakeVisible (total);
-        note.setFont (theme::font (theme::type::small));
+        note.setFont (theme::font (theme::type::smallSize));
         note.setColour (juce::Label::textColourId, theme::colour::textDisabled);
         note.setText (tr ("100% = one processor core busy for the whole time the audio lasts"), juce::dontSendNotification);
         addAndMakeVisible (note);

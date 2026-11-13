@@ -92,7 +92,7 @@ public:
         addTextEditor ("name", name, tr ("Name"));
         addCustomComponent (&swatches);
         hint.setText (tr ("Click a color, pick any color below, or press F2 for a random one"), juce::dontSendNotification);
-        hint.setFont (theme::font (theme::type::small));
+        hint.setFont (theme::font (theme::type::smallSize));
         hint.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         hint.setSize (swatches.getWidth(), 18);
         addCustomComponent (&hint);
@@ -159,7 +159,7 @@ public:
         g.setFont (font (type::body, true));
         g.drawText (getButtonText(), getLocalBounds().reduced (12, 0).withTrimmedTop (5).withHeight (18), juce::Justification::centredLeft, true);
         g.setColour (colour::textSecondary);
-        g.setFont (font (type::small));
+        g.setFont (font (type::smallSize));
         g.drawText (noteText, getLocalBounds().reduced (12, 0).withTrimmedTop (24).withHeight (16), juce::Justification::centredLeft, true);
     }
 
@@ -520,7 +520,7 @@ public:
         keep.setSize (340, 24);
         addCustomComponent (&keep);
         note.setText (tr ("Off: resample, like a tape: higher is shorter, lower is longer."), juce::dontSendNotification);
-        note.setFont (theme::font (theme::type::small));
+        note.setFont (theme::font (theme::type::smallSize));
         note.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         note.setSize (340, 18);
         addCustomComponent (&note);

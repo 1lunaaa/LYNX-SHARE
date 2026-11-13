@@ -407,7 +407,7 @@ public:
             tracksText.setText (names.joinIntoString (", "), juce::dontSendNotification);
             tracksText.setTooltip (names.joinIntoString ("\n"));
             tracksText.setMinimumHorizontalScale (0.7f);
-            tracksText.setFont (theme::font (theme::type::small));
+            tracksText.setFont (theme::font (theme::type::smallSize));
             tracksText.setColour (juce::Label::textColourId, theme::colour::textPrimary);
             addAndMakeVisible (tracksText);
         }
@@ -494,10 +494,10 @@ public:
         hqToggle.setTooltip (tr ("Plugins with a separate render quality use it, and HQ switches are turned on for the export. "
                                  "Off: the export uses the playback quality, so it sounds exactly like what you heard"));
 
-        infoLabel.setFont (theme::font (theme::type::small));
+        infoLabel.setFont (theme::font (theme::type::smallSize));
         infoLabel.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         addAndMakeVisible (infoLabel);
-        warningLabel.setFont (theme::font (theme::type::small));
+        warningLabel.setFont (theme::font (theme::type::smallSize));
         warningLabel.setColour (juce::Label::textColourId, theme::colour::warning);
         infoLabel.setMinimumHorizontalScale (0.7f); // (round 165c: the real-time line is longer)
         warningLabel.setMinimumHorizontalScale (0.7f);

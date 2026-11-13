@@ -236,7 +236,7 @@ int paintPresence (juce::Graphics& g, juce::Rectangle<int> area, const LiveSessi
         return 0;
     const auto people = live.getPeople();
     auto r = area;
-    const auto f = juce::Font (font (type::small, true));
+    const auto f = juce::Font (font (type::smallSize, true));
     // the session badge: LIVE (connecting / knocking: its state)
     using S = LiveSessionManager::State;
     const bool on = live.getState() == S::live;

@@ -793,7 +793,7 @@ public:
         for (auto* row : { &time, &length })
         {
             row->label.setColour (juce::Label::textColourId, theme::colour::textSecondary);
-            row->label.setFont (theme::font (theme::type::small));
+            row->label.setFont (theme::font (theme::type::smallSize));
             row->editor.setFont (theme::monoFont (theme::type::body));
             row->editor.setJustification (juce::Justification::centredLeft);
             row->editor.onTextChange = [row] { row->touched = true; };
@@ -893,7 +893,7 @@ private:
     void addRow (SliderRow& row, const char* name, double min, double max, const juce::String& suffix)
     {
         row.label.setText (tr (name), juce::dontSendNotification);
-        row.label.setFont (theme::font (theme::type::small));
+        row.label.setFont (theme::font (theme::type::smallSize));
         row.label.setColour (juce::Label::textColourId, theme::colour::textSecondary);
         row.slider.setRange (min, max, 1.0);
         row.slider.setTextValueSuffix (suffix);
