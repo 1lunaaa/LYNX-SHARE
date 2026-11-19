@@ -1447,16 +1447,7 @@ Song Song::makeDefault()
         return c;
     };
 
-    song.channels = {
-        channel ("Kick", InstrumentKind::kick, 0.9f, 0.0f),
-        channel ("Clap", InstrumentKind::clap, 0.8f, 0.0f),
-        channel ("Hat", InstrumentKind::hat, 0.7f, 0.1f),
-        channel ("Snare", InstrumentKind::snare, 0.8f, 0.0f),
-        channel ("Synth", InstrumentKind::synth, 0.78f, 0.0f),
-    };
-
-    for (std::size_t i = 0; i < song.channels.size(); ++i)
-        song.channels[i].mixerTrack = (int) i + 1;
+    song.channels.clear();
 
     // like FL's template: a limiter on Master (transparent up to -0.3 dB)
     EffectSlot limiter;

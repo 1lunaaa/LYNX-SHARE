@@ -6499,6 +6499,79 @@ bool addAudioClip (AudioEngine& engine, const juce::File& file, std::int64_t sta
     });
     return true;
 }
+
+bool addSamplerClip (AudioEngine& engine, const juce::File& file, std::int64_t start, int track)
+{
+    if (! SampleLibrary::isSampleFile (file))
+        return false;
+
+    const auto data = engine.getSampleLibrary().load (file.getFullPathName());
+    if (data == nullptr)
+        return false;
+
+    const auto seconds = (double) data->frames() / data->sampleRate;
+    const auto length = juce::jmax<std::int64_t> (ppq, (std::int64_t) (seconds * engine.getSong().bpm / 60.0 * ppq));
+    const auto path = file.getFullPathName().toStdString();
+    const auto name = file.getFileNameWithoutExtension().toStdString();
+
+    engine.editSong ([=] (Song& s) {
+        int chIdx = -1;
+        if (track >= 0 && track < (int) s.playlistTracks.size())
+        {
+            auto& pt = s.playlistTracks[(std::size_t) track];
+            if (pt.channel >= 0 && pt.channel < (int) s.channels.size())
+                chIdx = pt.channel;
+        }
+
+        if (chIdx >= 0)
+        {
+            auto& c = s.channels[(std::size_t) chIdx];
+            c.name = name;
+            c.instrument = InstrumentKind::sampler;
+            c.samplePath = path;
+            if (c.mixerTrack <= 0)
+            {
+                const auto linked = trackmodes::armableInsert (s, track);
+                c.mixerTrack = linked > 0 ? linked : s.claimFreeInsert();
+            }
+        }
+        else
+        {
+            ChannelDef c;
+            c.name = name;
+            c.instrument = InstrumentKind::sampler;
+            c.samplePath = path;
+            const auto linked = trackmodes::armableInsert (s, track);
+            c.mixerTrack = linked > 0 ? linked : s.claimFreeInsert();
+            s.channels.push_back (c);
+            chIdx = (int) s.channels.size() - 1;
+            if (track >= 0)
+            {
+                if ((int) s.playlistTracks.size() <= track)
+                    s.playlistTracks.resize ((std::size_t) track + 1);
+                s.playlistTracks[(std::size_t) track].mode = PlaylistTrackMode::instrument;
+                s.playlistTracks[(std::size_t) track].channel = chIdx;
+                s.playlistTracks[(std::size_t) track].mixerTrack = c.mixerTrack;
+            }
+        }
+
+        Pattern pat;
+        pat.name = name;
+        const int patIdx = (int) s.patterns.size();
+        s.patterns.push_back (std::move (pat));
+
+        Clip clip;
+        clip.kind = ClipKind::pattern;
+        clip.pattern = patIdx;
+        clip.track = track;
+        clip.start = start;
+        clip.length = length;
+        s.playlist.push_back (clip);
+        s.currentPattern = patIdx;
+        s.mode = PlayMode::song;
+    });
+    return true;
+}
 } // namespace
 
 void PlaylistComponent::filesDropped (const juce::StringArray& files, int x, int y)
@@ -6507,11 +6580,16 @@ void PlaylistComponent::filesDropped (const juce::StringArray& files, int x, int
     auto track = yToTrack (y);
 
     for (const auto& f : files)
-        if (videotracks::isVideoFile (juce::File (f)))
+    {
+        const juce::File file (f);
+        if (videotracks::isVideoFile (file))
             // a video dropped on the clip tracks: a video clip on a video track, where it was dropped (round 174d)
-            videotracks::importVideo (engine, juce::File (f), engine.getSong().secondsForTicks (start));
-        else if (addAudioClip (engine, juce::File (f), start, track, false))
+            videotracks::importVideo (engine, file, engine.getSong().secondsForTicks (start));
+        else if (SampleLibrary::isSampleFile (file) && addSamplerClip (engine, file, start, track))
             ++track; // multiple files: one below the other
+        else if (addAudioClip (engine, file, start, track, false))
+            ++track; // multiple files: one below the other
+    }
 }
 
 void PlaylistComponent::addAudioClipAtPlayhead (const juce::File& file)

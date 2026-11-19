@@ -2391,9 +2391,6 @@ public:
                 const auto liveBase = baseRate (*v.data);
                 if (liveBase > 0.0)
                 {
-                    v.rate = dir * liveBase;
-                    if (ks.on)
-                        ks.ahead.rate = v.rate;
                 }
             }
             if (clipMode)
