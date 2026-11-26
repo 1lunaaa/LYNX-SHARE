@@ -833,18 +833,25 @@ public:
             const auto name = f.getFileNameWithoutExtension().toLowerCase();
             return name.contains ("cover") || name.contains ("folder") || name.contains ("artwork") || name.contains ("front") ? 0 : 1;
         };
-        juce::File best;
-        for (const auto& f : folder.findChildFiles (juce::File::findFiles, false, "*.png;*.jpg;*.jpeg"))
-            if (best == juce::File() || score (f) < score (best)
-                || (score (f) == score (best) && f.getFileName().compareNatural (best.getFileName()) < 0))
-                best = f;
+        auto pick = [&score] (const juce::File& d) {
+            juce::File b;
+            for (const auto& f : d.findChildFiles (juce::File::findFiles, false, "*.png;*.jpg;*.jpeg;*.webp"))
+                if (b == juce::File() || score (f) < score (b) || (score (f) == score (b) && f.getFileName().compareNatural (b.getFileName()) < 0))
+                    b = f;
+            return b;
+        };
+        auto best = pick (folder);
+        if (best == juce::File()) {
+            const auto subs = folder.findChildFiles (juce::File::findDirectories, false, "*");
+            if (subs.size() == 1) best = pick (subs[0]);
+        }
         coverFiles.emplace (key, best);
         return best;
     }
 
     bool hasCover (const Node& n) const
     {
-        return ! flat && n.kind == Kind::fsFolder && n.folder && n.depth > 0 && n.file != juce::File()
+        return ! flat && n.kind == Kind::fsFolder && n.folder && n.file != juce::File()
                && coverFileOf (n.file) != juce::File();
     }
 
@@ -2731,6 +2738,8 @@ void BrowserComponent::saveView() const
 
 bool BrowserComponent::lists (const juce::File& file) const
 {
+    const auto ext = file.getFileExtension().toLowerCase();
+    if (! file.isDirectory() && (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".webp" || ext == ".gif" || ext == ".bmp")) return false;
     return browserview::listed (file.getFileName().toStdString(), view.filter) || file.isDirectory();
 }
 
