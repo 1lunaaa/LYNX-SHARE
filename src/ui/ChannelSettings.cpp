@@ -2913,26 +2913,24 @@ public:
         setup (stretch, stretchLabel, TR_NOOP ("Time"), 0.0, 128.0, 0.01, " beats");
         // issue #32 #7: "Fit to tempo" sets exact lengths (16.45 beats for a loop with a tail, 128 for 32 bars); the knob used
         // to round them to 0.25 and cap them at 64, and every other edit in this panel wrote the rounded value back
-        stretch.setSkewFactorFromMidPoint (32.0);
-        stretch.setMouseDragSensitivity (180);
+        stretch.setSkewFactorFromMidPoint (24.0);
         stretch.onValueChange = [this] {
-            if (stretch.isMouseButtonDown()
-                && ! juce::ModifierKeys::currentModifiers.isShiftDown()
-                && ! juce::ModifierKeys::currentModifiers.isCommandDown())
+            const auto mods = juce::ModifierKeys::currentModifiers;
+            if (! mods.isShiftDown() && ! mods.isCommandDown() && ! mods.isCtrlDown())
             {
                 const auto v = stretch.getValue();
-                const auto nearest = std::round (v);
-                if (std::abs (v - nearest) <= 0.46)
-                    stretch.setValue (nearest, juce::dontSendNotification);
+                const auto nearestBar = std::round (v / 4.0) * 4.0;
+                const auto snapped = (std::abs (v - nearestBar) <= 0.75) ? nearestBar : std::round (v);
+                if (std::abs (v - snapped) > 1.0e-5)
+                    stretch.setValue (snapped, juce::dontSendNotification);
             }
             apply (&stretch);
         };
-        stretch.onDragStart = [] {
-            auto m = juce::Desktop::getInstance().getMainMouseSource();
-            if (m.isDragging()) m.enableUnboundedMouseMovement (true, false);
+        stretch.onDragStart = [this] {
+            stretch.setMouseCursor (juce::MouseCursor::NoCursor);
         };
-        stretch.onDragEnd = [] {
-            juce::Desktop::getInstance().getMainMouseSource().enableUnboundedMouseMovement (false, true);
+        stretch.onDragEnd = [this] {
+            stretch.setMouseCursor (juce::MouseCursor::NormalCursor);
         };
         stretch.addMouseListener (&stretchMenu, false);
         setup (regionStart, regionStartLabel, TR_NOOP ("Start"), 0.0, 1.0, 0.001, "");
@@ -2959,6 +2957,12 @@ public:
         sustain.setDoubleClickReturnValue (true, 1.0);
         decay.setSkewFactorFromMidPoint (0.5);
         stretch.setTooltip (tr ("0 = off. Otherwise the whole sample lasts this many beats and follows the BPM (by resampling, like FL's Resample mode)"));
+        stretch.setSliderStyle (juce::Slider::LinearBar);
+        stretch.setTextBoxStyle (juce::Slider::TextBoxRight, false, 68, 22);
+        stretch.setColour (juce::Slider::trackColourId, juce::Colour (0xff00c4b4));
+        stretch.setColour (juce::Slider::backgroundColourId, juce::Colour (0xff141820));
+        stretch.setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xfff4f6f8));
+        stretch.setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0xb3ffffff));
         attack.setSkewFactorFromMidPoint (0.2);
         release.setSkewFactorFromMidPoint (0.4);
         release.setTooltip (tr ("0 = the whole sample plays (one-shot), like FL's steps"));
@@ -3017,7 +3021,7 @@ public:
 
         refresh();
         engine.addChangeListener (this);
-        setSize (420, 520);
+        setSize (460, 360);
         if (ref.index >= 0)
             startTimerHz (30); // the knobs follow their automation while the song plays (issue #12)
     }
@@ -3038,15 +3042,14 @@ public:
             s.setBounds (cell.withSizeKeepingCentre (kw, kh));
         };
 
-        // Fila 1: Gain + Time stretching (Pitch, Time, Keep pitch, Mode)
+        // Fila 1: Gain + Pitch + Keep pitch / Mode
         auto top = area.removeFromTop (76);
         {
             const auto kw = 64;
             placeKnob (top.removeFromLeft (kw), gain, gainLabel);
-            top.removeFromLeft (6);
-            placeKnob (top.removeFromLeft (kw), pitch, pitchLabel);
-            placeKnob (top.removeFromLeft (kw), stretch, stretchLabel);
             top.removeFromLeft (8);
+            placeKnob (top.removeFromLeft (kw), pitch, pitchLabel);
+            top.removeFromLeft (12);
             auto rightCol = top.withSizeKeepingCentre (top.getWidth(), 48);
             keepPitch.setBounds (rightCol.removeFromTop (22));
             rightCol.removeFromTop (4);
@@ -3055,12 +3058,19 @@ public:
 
         area.removeFromTop (8);
 
-        // Fila 2: Envelope (Attack, Decay, Sustain, Release)
-        auto envRow = area.removeFromTop (74);
+        // Fila 2: Time horizontal bar (ADSR oculto)
+        for (auto [slider, label] : { std::pair { &attack, &attackLabel }, { &decay, &decayLabel }, { &sustain, &sustainLabel }, { &release, &releaseLabel } })
         {
-            const auto w = envRow.getWidth() / 4;
-            for (auto [slider, label] : { std::pair { &attack, &attackLabel }, { &decay, &decayLabel }, { &sustain, &sustainLabel }, { &release, &releaseLabel } })
-                placeKnob (envRow.removeFromLeft (w), *slider, *label);
+            slider->setVisible (false);
+            label->setVisible (false);
+        }
+
+        auto timeRow = area.removeFromTop (26);
+        {
+            stretchLabel.setFont (theme::font (theme::type::caption));
+            stretchLabel.setJustificationType (juce::Justification::centredLeft);
+            stretchLabel.setBounds (timeRow.removeFromLeft (44));
+            stretch.setBounds (timeRow.reduced (0, 2));
         }
 
         area.removeFromTop (8);
@@ -3085,10 +3095,9 @@ public:
         cut.setBounds (flagsRow.removeFromLeft (115));
         porta.setBounds (flagsRow.removeFromLeft (100));
 
-        // Botones inferiores (Modulation / Precomputed effects)
+        // Botón inferior (Precomputed effects)
+        modulationButton.setVisible (false);
         auto buttons = area.removeFromBottom (26);
-        const auto half = buttons.getWidth() / 2;
-        modulationButton.setBounds (buttons.removeFromLeft (half).reduced (3, 0));
         precomputeButton.setBounds (buttons.reduced (3, 0));
     }
 
@@ -5071,12 +5080,8 @@ public:
             };
         }
 
-        int width = MiscPanel::preferredWidth, height = MiscPanel::preferredHeight;
-        for (auto& p : pages)
-        {
-            width = juce::jmax (width, p->getWidth());
-            height = juce::jmax (height, p->getHeight());
-        }
+        int width = pages.empty() ? MiscPanel::preferredWidth : pages.front()->getWidth();
+        int height = pages.empty() ? MiscPanel::preferredHeight : pages.front()->getHeight();
         refresh();
         engine.addChangeListener (this);
         setSize (width, headerHeight + height);
@@ -5097,6 +5102,12 @@ public:
         {
             pages[(std::size_t) i]->setVisible (i == index);
             tabs[(std::size_t) i]->setToggleState (i == index, juce::dontSendNotification);
+        }
+        if (! pages.empty())
+        {
+            const auto* active = pages[(std::size_t) index].get();
+            if (active->getWidth() > 0 && active->getHeight() > 0)
+                setSize (active->getWidth(), headerHeight + active->getHeight());
         }
     }
 
